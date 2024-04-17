@@ -18,6 +18,8 @@ export default function KanbasNavigation() {
       ),
     },
     { label: 'Dashboard', icon: <FaTachometerAlt className="icon fs-2 text-danger" /> },
+    { label: 'Quizzes', icon: <FaTachometerAlt className="icon fs-2 text-danger" /> },
+
     { label: 'Courses', icon: <FaBook className="icon fs-2 text-danger" /> },
     { label: 'Calendar', icon: <FaRegCalendarAlt className="icon fs-2 text-danger" /> },
     { label: 'Inbox', icon: <IoMdMail className="icon fs-2 text-danger" /> },
