@@ -1,0 +1,210 @@
+/* Base font size for improved readability */
+html {
+  font-size: 16px; /* This sets the base font size for the whole document */
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.5; /* Improved line height for readability */
+}
+
+.quiz-container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex-grow: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 1.125rem; /* 18px if the base size is 16px */
+  border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+  border-bottom: 3px solid black;
+}
+
+.details-container, .questions-container {
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.quiz-title-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem; /* 16px if the base size is 16px */
+  margin-bottom: 20px;
+}
+
+.wysiwyg-editor {
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.editor-toolbar {
+  background-color: #f3f3f3;
+  padding: 5px;
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.toolbar-item {
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+
+.editor-textarea {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  min-height: 150px;
+}
+
+/* Form select elements */
+.details-container select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 1rem;
+}
+
+/* Options section with checkboxes */
+.quiz-options label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.quiz-options input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.time-limit input[type="number"] {
+  margin-left: 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  width: auto;
+  font-size: 1rem;
+}
+
+/* Action buttons */
+.action-buttons {
+  text-align: right;
+}
+
+
+
+/* Action buttons */
+.action-buttons button {
+    padding: 0.5rem 1rem;
+    margin-left: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .cancel-btn {
+    background-color: #2196f3; /* Blue */
+    color: white;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #1976d2; /* Darker blue on hover */
+  }
+  
+  .publish-btn {
+    background-color: #4caf50; /* Green */
+    color: white;
+  }
+  
+  .publish-btn:hover {
+    background-color: #43a047; /* Darker green on hover */
+  }
+  
+  .save-btn {
+    background-color: #f44336; /* Red */
+    color: white;
+  }
+  
+  .save-btn:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+  }
+
+  
+
+/* Assign Section Styles */
+.assign-section {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.assign-to,
+.date-field,
+.availability {
+  margin-bottom: 15px;
+}
+
+.assign-to label,
+.date-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.assign-to input[type="text"],
+.date-field input[type="datetime-local"] {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  min-height: 44px;
+}
+
+.availability {
+  display: flex;
+  justify-content: space-between;
+}
+
+.availability .date-field {
+  flex-basis: 48%; /* Adjust based on the space between the fields */
+}
+
+.add-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+}
+
+.add-button:hover {
+  background-color: #e8e8e8;
+}
+
+
+
+
