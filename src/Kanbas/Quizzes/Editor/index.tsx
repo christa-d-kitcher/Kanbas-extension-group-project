@@ -22,9 +22,36 @@ function QuizzesDetail() {
     // sending the data to an API
   };
 
+  const [published, setPublished] = useState(false); // State to track if quiz is published
+
+  const handlePublish = () => {
+    // Logic to publish the quiz
+    setPublished(true); // Update state to indicate the quiz is published
+    console.log('Quiz published');
+    //
+  };
+
   return (
     <div className="p-4 kanbas-navigation">
       <h1 className="mb-4">Quizzes Details</h1>
+        {/* <button type="submit" className="btn btn-primary me-2">Publish</button> */}
+{/* Button to publish quiz */}
+{!published ? (
+        <button type="button" className="btn btn-primary me-2" onClick={handlePublish}>
+          Publish
+        </button>
+      ) : (
+        <span role="img" aria-label="Published">
+          ✅ Published
+        </span>
+      )}
+      
+
+        <Link to="/Kanbas/Quizzes/Preview" className="btn btn-primary me-2">Preview</Link>
+      <Link to="/Kanbas/Quizzes/Edit" className="btn btn-primary me-2">Edit</Link>
+      <br/> 
+      <br/>
+
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="quizType" className="form-label">Quiz Type</label>
@@ -124,10 +151,11 @@ function QuizzesDetail() {
           <input type="date" id="untilDate" className="form-control" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} />
         </div>
 
-        <button type="submit" className="btn btn-primary me-2"
-                //   onClick={handleAddNewQuiz}
-                  >Save</button>
+        {/* <button type="submit" className="btn btn-primary me-2" */}
+                   {/* onClick={handleAddNewQuiz} */}
+                  {/* >Save</button> */}
 
+<Link to="/Kanbas/Quizzes" type="submit" className="btn btn-primary me-2">Save</Link>
         <Link to="/Kanbas/Quizzes" className="btn btn-danger">Cancel</Link>
       </form>
     </div>
