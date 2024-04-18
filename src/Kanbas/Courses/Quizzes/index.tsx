@@ -4,7 +4,7 @@ import { Editor } from '@tinymce/tinymce-react';// use the advanced editor calle
 import * as client from "./client";
 import { useNavigate, useParams, Link } from "react-router-dom";
 //need to install TinyMCE React integration:npm install @tinymce/tinymce-react
-
+import QuestionsEditor from './QuestionsEditor';
 
 const Quizzes = () => {
   const navigate = useNavigate();
@@ -233,6 +233,10 @@ const Quizzes = () => {
             <button className="save-btn" onClick={handleSave}>Save</button>
           </div>
         </div>
+      )}
+
+      {activeTab === 'Questions' && (
+        <QuestionsEditor />
       )}
     </div>
   );
