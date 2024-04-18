@@ -31,11 +31,21 @@ const Quizzes = () => {
   };
   const handleSaveAndPublish = async() => { 
       const resp = await client.saveQuiz(quiz);
-      await client.publishQuiz(resp.id);
+      await client.publishQuiz(resp._id);
       navigate(`/Kanbas/Courses/${cid}/quizzes`);
   };
   const handleCancel = () => { 
-      setQuiz({})
+      setQuiz({
+        timeLimit: 20,
+        type: "Graded Quiz",
+        assignmentGroup: "Quizzes",
+        isPublished: false,
+        shuffleAnswers: true,
+        multipleAttempts: false,
+        oneQuestionAtATime: true,
+        webcamRequired: false,
+        lockQuestionsAfterAnswering: false,
+      })
       navigate(`/Kanbas/Courses/${cid}/quizzes`);
   };
 
