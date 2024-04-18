@@ -6,6 +6,8 @@ import Modules from './Modules'
 import Home from './Home'
 import Assignments from './Assignments'
 import AssignmentEditor from './Assignments/Editor'
+import Quizzes from './Quizzes'
+import QuestionContent from './Quizzes/QuestionsEditor/QuestionsContent'
 import Grades from './Grades'
 import { FaGlasses } from 'react-icons/fa'
 import axios from 'axios'
@@ -89,6 +91,8 @@ export default function Courses({ courses }: { courses: any[] }) {
         return 'Modules'
       case 'Assignments':
         return 'Assignments'
+      case 'Quizzes':
+        return 'Quizzes'
       case 'Grades':
         return 'Grades'
       case 'Piazza':
@@ -171,6 +175,8 @@ export default function Courses({ courses }: { courses: any[] }) {
           <Route path="ZoomMeetings" element={<h1>Zoom Meetings</h1>} />
           <Route path="Assignments" element={<Assignments />} />
           <Route path="Assignments/:assignmentId" element={<AssignmentEditor />} />
+          <Route path="Quizzes/*" element={<Quizzes />} />
+          <Route path="Quizzes/:quizId/QuestionEditor/:questionId" element={<QuestionContent />} />
           <Route path="Grades" element={<Grades />} />
           <Route path="People" element={<h1>People</h1>} />
           <Route path="PanoptoVideo" element={<h1>Panopto Video</h1>} />

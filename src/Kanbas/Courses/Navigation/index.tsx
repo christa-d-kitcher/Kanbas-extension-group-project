@@ -8,6 +8,7 @@ export default function CourseNavigation() {
     'Piazza',
     'ZoomMeetings',
     'Assignments',
+    'Quizzes',
     'Grades',
     'People',
     'PanoptoVideo',
