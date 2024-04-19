@@ -7,6 +7,8 @@ import Home from './Home'
 import Assignments from './Assignments'
 import AssignmentEditor from './Assignments/Editor'
 import Quizzes from './Quizzes'
+import QuizDetail from './Quizzes/Detail'
+import QuizaDetailEditor from './Quizzes/DetailEditor'
 import QuestionContent from './Quizzes/QuestionsEditor/QuestionsContent'
 import Grades from './Grades'
 import { FaGlasses } from 'react-icons/fa'
@@ -176,6 +178,8 @@ export default function Courses({ courses }: { courses: any[] }) {
           <Route path="Assignments" element={<Assignments />} />
           <Route path="Assignments/:assignmentId" element={<AssignmentEditor />} />
           <Route path="Quizzes/*" element={<Quizzes />} />
+          <Route path="Quizzes/:quizId/QuizDetail" element={<QuizDetail />} />
+          <Route path="Quizzes/:quizId/DetailEditor" element={<QuizaDetailEditor />} />
           <Route path="Quizzes/:quizId/QuestionEditor/:questionId" element={<QuestionContent />} />
           <Route path="Grades" element={<Grades />} />
           <Route path="People" element={<h1>People</h1>} />

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './index.css';
 import { Editor } from '@tinymce/tinymce-react';// use the advanced editor called TinyMCE for the Description (WYSIWYG),
-import * as client from "./client";
+import * as client from "../client";
 import { useNavigate, useParams, Link } from "react-router-dom";
 //need to install TinyMCE React integration:npm install @tinymce/tinymce-react
-import QuestionsEditor from './QuestionsEditor';
+import QuestionsEditor from '../QuestionsEditor';
 
 const Quizzes = () => {
   const navigate = useNavigate();
