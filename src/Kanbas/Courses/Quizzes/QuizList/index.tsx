@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import quizReducer from './quizReducer';
-import QuizList from './QuizDetails/QuizList';
-import QuizDetails from './QuizDetails/QuizDetails';
+import QuizList from './QuizFolder/QuizList';
+import QuizDetails from './QuizFolder/QuizDetails';
 
 const store = configureStore({
   reducer: {
