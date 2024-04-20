@@ -41,8 +41,8 @@ const quizSlice = createSlice({
       );
     },
     deleteQuiz: (state, action: PayloadAction<string>) => {
-      state.quizzes = state.quizzes.filter(quiz => quiz.id !== action.payload);
-    },
+      state.quizzes = state.quizzes.filter(quiz => quiz._id !== action.payload);
+    },    
   },
 });
 

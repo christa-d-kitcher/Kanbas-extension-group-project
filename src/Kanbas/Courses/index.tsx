@@ -32,7 +32,7 @@ export default function Courses({ courses }: { courses: any[] }) {
   // console.log(COURSES_API)
   const [course, setCourse] = useState<any>({ _id: '' })
 
-  console.log(course)
+  // console.log(course)
   const findCourseById = useCallback(
     async (courseId?: string) => {
       const response = await axios.get(`${COURSES_API}/${courseId}/modules`)

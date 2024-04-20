@@ -49,6 +49,6 @@ export const deleteQuestion = async (quizId: string, questionId: string) => {
 }
 
 export const getQuizzesByCourseId = async (courseId: string) => {
-  const response = await axios.get(`${QUIZZES_API}/quizzes/course/${courseId}`)
+  const response = await axios.get(`${QUIZZES_API}/course/${courseId}`)
   return response.data
 }

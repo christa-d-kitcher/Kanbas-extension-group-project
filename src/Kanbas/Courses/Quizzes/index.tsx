@@ -5,15 +5,11 @@ import { MdOutlinePublishedWithChanges } from 'react-icons/md'
 import { FaBan, FaPlus, FaEllipsisV } from 'react-icons/fa'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { IoRocketOutline } from 'react-icons/io5'
-import axios from 'axios' // Import axios for HTTP requests
 import moment from 'moment'
 import * as client from './client'
 import { KanbasState } from '../../store'
-
+import { deleteQuiz as deleteQuizAction } from './quizReducer';
 import { setQuizzes, setCurrentQuiz, addQuiz, updateQuiz, deleteQuiz } from './quizReducer'
-
-const API_BASE = process.env.REACT_APP_BASE_API_URL
-const QUIZZES_API = `${API_BASE}/api/quizzes`
 
 const QuizList = () => {
   const navigate = useNavigate()
@@ -25,22 +21,22 @@ const QuizList = () => {
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      const quizzesData = await client.getAllQuizzes()
-      dispatch(setQuizzes(quizzesData))
-    //   console.log(quizzesData)
-    }
-    fetchQuizzes()
-  }, [])
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '');
+      dispatch(setQuizzes(quizzesData));
+    };
+    fetchQuizzes();
+  }, [dispatch, courseId, quizzes.length]);  // Add quizzes.length as a dependency
+  
 
   const handlePublish = async (quizId: string) => {
     await client.publishQuiz(quizId)
-    const quizzesData = await client.getAllQuizzes()
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
   }
 
   const handleUnpublish = async (quizId: string) => {
     await client.unpublishQuiz(quizId)
-    const quizzesData = await client.getAllQuizzes()
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
   }
 
@@ -73,20 +69,25 @@ const QuizList = () => {
     }
   }
 
-  const deleteQuiz = async (quizId: string) => {
-    try {
-      await axios.delete(`${QUIZZES_API}/${quizId}`)
-      const quizzesData = await client.getAllQuizzes()
-      dispatch(setQuizzes(quizzesData))
-    } catch (error) {
-      console.error('Error deleting quiz:', error)
+const deleteQuiz = async (quizId: string) => {
+    // Confirmation dialog
+    if (window.confirm('Are you sure you want to delete this quiz?')) {
+        await client.deleteQuiz(quizId);
+        dispatch(deleteQuizAction(quizId));  // Dispatch action to update the state
+        const quizzesData = await client.getQuizzesByCourseId(courseId || '');
+        dispatch(setQuizzes(quizzesData)); // Optionally refetch and reset the list
     }
-  }
+}
 
   return (
     <div>
       {quizzes.length === 0 ? (
-        <p>Click Add Quiz Button to add a new quiz</p>
+        <div>
+          <p className="my-2 display-6">Click Add Quiz Button to add a new quiz</p>
+          <button className="btn btn-primary" onClick={handleAddQuiz}>
+            Add Quiz
+          </button>
+        </div>
       ) : (
         <div>
           <div className="row main-header pt-4 my-3">
@@ -104,7 +105,10 @@ const QuizList = () => {
             </div>
             {/* Buttons */}
             <div className="col-auto">
-              <button className="btn btn-danger btn-outline-dark mx-2 text-white" onClick={handleAddQuiz} >
+              <button
+                className="btn btn-danger btn-outline-dark mx-2 text-white"
+                onClick={handleAddQuiz}
+              >
                 <FaPlus /> Quiz
               </button>
               <button className="btn btn-light btn-outline-dark me-1">
@@ -124,7 +128,10 @@ const QuizList = () => {
                     <div className="d-flex justify-content-between">
                       <div>
                         <div>
-                        <IoRocketOutline className="mx-4 text-success" style={{fontSize:'25px'}}/>
+                          <IoRocketOutline
+                            className="mx-4 text-success"
+                            style={{ fontSize: '25px' }}
+                          />
                           <span
                             onClick={() => handleQuizClick(quiz._id)}
                             style={{ fontSize: '23px' }}
@@ -134,20 +141,18 @@ const QuizList = () => {
                         </div>
                         <div className="ms-5 ps-4 " style={{ color: '#666' }}>
                           <span>{renderAvailability(quiz)} | </span>
-                          <span>
-                            Due Date: {moment(quiz.dueDate).format('MMM DD h:mm a')} | {' '}
-                          </span>
+                          <span>Due Date: {moment(quiz.dueDate).format('MMM DD h:mm a')} | </span>
                           <span>Points: {quiz.points} | </span>
                           <span>Number of Questions: {quiz.questions.length}</span>
                         </div>
                       </div>
-                      <div className='d-flex'>
+                      <div className="d-flex">
                         {quiz.isPublished ? (
                           <span
                             role="img"
                             aria-label="Published"
                             onClick={() => handleUnpublish(quiz._id)}
-                            style={{fontSize: '25px'}}
+                            style={{ fontSize: '25px' }}
                           >
                             <MdOutlinePublishedWithChanges className="text-success" />
                           </span>
@@ -156,7 +161,7 @@ const QuizList = () => {
                             role="img"
                             aria-label="Unpublished"
                             onClick={() => handlePublish(quiz._id)}
-                            style={{fontSize: '25px'}}
+                            style={{ fontSize: '25px' }}
                           >
                             <FaBan className="text-danger" />
                           </span>
