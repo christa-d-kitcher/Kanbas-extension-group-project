@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface Quiz {
     _id?: string;
     id: string;
+    courseId: string;
     title: string;
     description: string;
     published: boolean;
@@ -28,7 +29,7 @@ interface QuizState {
 
 const initialState: QuizState = {
   quizzes: [],
-  quiz: { id: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] },
+  quiz: {_id: '',  id: '', courseId: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] },
 };
 
 const quizSlice = createSlice({
@@ -53,7 +54,7 @@ const quizSlice = createSlice({
       state.quizzes = state.quizzes.filter(quiz => quiz._id !== action.payload);
     },
     resetQuiz: (state) => {
-      state.quiz = {_id: '', id: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] };
+      state.quiz = {_id: '', id: '', courseId: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] };
     },
   },
 });

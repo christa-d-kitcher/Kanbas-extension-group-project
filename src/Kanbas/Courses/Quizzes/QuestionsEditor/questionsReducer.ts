@@ -4,7 +4,7 @@ interface Question {
     id: number,
     type: string,
     title: string,
-    choices: string[],
+    choices?: string[],
     correct: string[],
     points: number
 }
@@ -26,17 +26,17 @@ const questionSlice = createSlice({
         addChoice: (state, action) => {
             state.question = {
                     ...state.question,
-                    choices: [...state.question.choices, action.payload]
+                    choices: [...(state.question.choices ?? []), action.payload]
                   }
         },
         deleteChoiceById : (state, action) => {
           state.question = {
                             ...state.question,
-                            choices: state.question.choices.filter((choice, index) => index !== action.payload)
+                            choices: state.question.choices?.filter((choice, index) => index !== action.payload)
                             };
         },
         resetQuestion: (state) => {
-            state.question = {id: -1, type: "multiple", title: "new question", choices: [""], correct: [""],  points: 0}
+            state.question = {id: -1, type: "multiple", title: "new question", correct: [""],  points: 0}
         },
         setQuestion: (state, action) => {
             state.question = { ...action.payload };

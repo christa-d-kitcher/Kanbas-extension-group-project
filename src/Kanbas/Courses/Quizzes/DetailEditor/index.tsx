@@ -21,19 +21,21 @@ const Quizzes = () => {
   const questions = useSelector((state: KanbasState) => state.questionsReducer.questions);
 
   useEffect(() => {
-    dispatch(setCurrentQuiz({...quiz, questions: questions}));
-  }, [questions]);
+      dispatch(setQuestions(quiz.questions));
+  }, []);
 
   const handleEditorChange = (content: string) => {
     dispatch(setCurrentQuiz({...quiz, description: content}))
   };
 
   const handleSave = async() => {
+    dispatch(setQuestions(questions));
     await client.saveQuiz(quiz);
     dispatch(setQuestions([]));
     navigate(`/Kanbas/Courses/${courseId}/quizzes`);
   };
   const handleSaveAndPublish = async() => {
+      dispatch(setQuestions(questions));
       const resp = await client.saveQuiz(quiz);
       await client.publishQuiz(resp._id);
       dispatch(setQuestions([]));
