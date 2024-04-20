@@ -6,6 +6,10 @@ import Modules from './Modules'
 import Home from './Home'
 import Assignments from './Assignments'
 import AssignmentEditor from './Assignments/Editor'
+import Quizzes from './Quizzes'
+import QuizDetail from './Quizzes/Detail'
+import QuizaDetailEditor from './Quizzes/DetailEditor'
+import QuestionContent from './Quizzes/QuestionsEditor/QuestionsContent'
 import Grades from './Grades'
 import { FaGlasses } from 'react-icons/fa'
 import axios from 'axios'
@@ -28,7 +32,7 @@ export default function Courses({ courses }: { courses: any[] }) {
   // console.log(COURSES_API)
   const [course, setCourse] = useState<any>({ _id: '' })
 
-  console.log(course)
+  // console.log(course)
   const findCourseById = useCallback(
     async (courseId?: string) => {
       const response = await axios.get(`${COURSES_API}/${courseId}/modules`)
@@ -89,6 +93,8 @@ export default function Courses({ courses }: { courses: any[] }) {
         return 'Modules'
       case 'Assignments':
         return 'Assignments'
+      case 'Quizzes':
+        return 'Quizzes'
       case 'Grades':
         return 'Grades'
       case 'Piazza':
@@ -171,6 +177,10 @@ export default function Courses({ courses }: { courses: any[] }) {
           <Route path="ZoomMeetings" element={<h1>Zoom Meetings</h1>} />
           <Route path="Assignments" element={<Assignments />} />
           <Route path="Assignments/:assignmentId" element={<AssignmentEditor />} />
+          <Route path="Quizzes/*" element={<Quizzes />} />
+          <Route path="Quizzes/:quizId/QuizDetail" element={<QuizDetail />} />
+          <Route path="Quizzes/:quizId/DetailEditor" element={<QuizaDetailEditor />} />
+          <Route path="Quizzes/:quizId/QuestionEditor/:questionId" element={<QuestionContent />} />
           <Route path="Grades" element={<Grades />} />
           <Route path="People" element={<h1>People</h1>} />
           <Route path="PanoptoVideo" element={<h1>Panopto Video</h1>} />
