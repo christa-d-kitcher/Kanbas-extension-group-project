@@ -17,7 +17,7 @@ function FillInTheBlank () {
   };
 
   const handelCancel = () => {
-     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor`);
+     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   const handleUpdateQuestion = () => {
@@ -31,7 +31,7 @@ function FillInTheBlank () {
     dispatch(addQuestion({...question, correct: correct}));
 
     dispatch(resetQuestion());
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes/`);
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   return (

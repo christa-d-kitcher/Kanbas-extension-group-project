@@ -14,7 +14,7 @@ function TrueFalse () {
   const questions = useSelector((state: KanbasState) => state.questionsReducer.questions);
 
   const handelCancel = () => {
-     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor`);
+     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   const handleUpdateQuestion = () => {
@@ -22,7 +22,7 @@ function TrueFalse () {
     const choices = ["true", "false"];
 
     dispatch(addQuestion({...question, correct: correct, choices: choices}));
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes/`);
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   return (

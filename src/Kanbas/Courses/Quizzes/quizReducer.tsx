@@ -9,6 +9,15 @@ interface Quiz {
     available: boolean;
     dueDate: string;
     points: number;
+    timeLimit: number,
+    type: string,
+    assignmentGroup: string,
+    isPublished: boolean,
+    shuffleAnswers: boolean,
+    multipleAttempts: boolean,
+    oneQuestionAtATime: boolean,
+    webcamRequired: boolean,
+    lockQuestionsAfterAnswering: boolean,
     questions: any[];
 }
 
@@ -19,7 +28,7 @@ interface QuizState {
 
 const initialState: QuizState = {
   quizzes: [],
-  quiz: null,
+  quiz: { id: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] },
 };
 
 const quizSlice = createSlice({
@@ -42,10 +51,13 @@ const quizSlice = createSlice({
     },
     deleteQuiz: (state, action: PayloadAction<string>) => {
       state.quizzes = state.quizzes.filter(quiz => quiz._id !== action.payload);
-    },    
+    },
+    resetQuiz: (state) => {
+      state.quiz = {_id: '', id: '', title: '', description: '', published: false, available: false, dueDate: '', points: 0, timeLimit: 0, type: '', assignmentGroup: '', isPublished: false, shuffleAnswers: false, multipleAttempts: false, oneQuestionAtATime: false, webcamRequired: false, lockQuestionsAfterAnswering: false, questions: [] };
+    },
   },
 });
 
-export const { setQuizzes, setCurrentQuiz, addQuiz, updateQuiz, deleteQuiz } = quizSlice.actions;
+export const { setQuizzes, setCurrentQuiz, addQuiz, updateQuiz, deleteQuiz, resetQuiz } = quizSlice.actions;
 
 export default quizSlice.reducer;

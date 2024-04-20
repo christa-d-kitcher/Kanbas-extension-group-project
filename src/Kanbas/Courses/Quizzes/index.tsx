@@ -10,6 +10,7 @@ import * as client from './client'
 import { KanbasState } from '../../store'
 import { deleteQuiz as deleteQuizAction } from './quizReducer';
 import { setQuizzes, setCurrentQuiz, addQuiz, updateQuiz, deleteQuiz } from './quizReducer'
+import { setQuestions } from './QuestionsEditor/questionsReducer'
 
 const QuizList = () => {
   const navigate = useNavigate()
@@ -51,6 +52,9 @@ const QuizList = () => {
   }
 
   const handleEdit = (quizId: string) => {
+    const currentQuiz = quizzes.find(quiz => quiz._id === quizId)
+    dispatch(setCurrentQuiz(currentQuiz))
+    dispatch(setQuestions(currentQuiz.questions))
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`)
   }
 

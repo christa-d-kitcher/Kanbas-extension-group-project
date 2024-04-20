@@ -1,8 +1,22 @@
 import {createSlice} from "@reduxjs/toolkit";
 
-const initialState = {
-    question: {id: -1, type: "multiple", title: "new question", choices: [""], correct: [""], points: 0},
-    questions: [{id: -2, type: "multiple", title: "new question", choices: [""], correct: [""],  points: 0}]
+interface Question {
+    id: number,
+    type: string,
+    title: string,
+    choices: string[],
+    correct: string[],
+    points: number
+}
+
+interface QuestionState {
+    question: Question,
+    questions: Question[]
+}
+
+const initialState : QuestionState = {
+    question: {id: -1, type: "multiple", title: "new question", choices: [""], correct: [""],  points: 0},
+    questions: []
 }
 
 const questionSlice = createSlice({

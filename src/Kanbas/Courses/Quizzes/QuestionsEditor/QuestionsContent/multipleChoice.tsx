@@ -16,7 +16,7 @@ function MultipleChoice () {
   };
 
   const handelCancel = () => {
-     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor`);
+     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   const handleUpdateQuestion = () => {
@@ -38,7 +38,7 @@ function MultipleChoice () {
     dispatch(addQuestion({...question, choices: choices, correct: correct}));
 
     dispatch(resetQuestion());
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes/`);
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
   return (

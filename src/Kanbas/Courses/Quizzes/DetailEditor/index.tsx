@@ -1,52 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Editor } from '@tinymce/tinymce-react';// use the advanced editor called TinyMCE for the Description (WYSIWYG),
 import * as client from "../client";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 //need to install TinyMCE React integration:npm install @tinymce/tinymce-react
 import QuestionsEditor from '../QuestionsEditor';
+import { KanbasState } from '../../../store';
+import { setQuestions } from '../QuestionsEditor/questionsReducer';
+import { setCurrentQuiz, resetQuiz } from '../quizReducer';
 
 const Quizzes = () => {
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState({
-    timeLimit: 20,
-    type: "Graded Quiz",
-    assignmentGroup: "Quizzes",
-    isPublished: false,
-    shuffleAnswers: true,
-    multipleAttempts: false,
-    oneQuestionAtATime: true,
-    webcamRequired: false,
-    lockQuestionsAfterAnswering: false,
-  } as any)
+  const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz);
+
   const [activeTab, setActiveTab] = useState('Details');
-  const { cid } = useParams();
+  const { courseId } = useParams();
+  const dispatch = useDispatch();
+
+  const questions = useSelector((state: KanbasState) => state.questionsReducer.questions);
+
+  useEffect(() => {
+    dispatch(setCurrentQuiz({...quiz, questions: questions}));
+  }, [questions]);
 
   const handleEditorChange = (content: string) => {
-    setQuiz({...quiz, description: content})
+    dispatch(setCurrentQuiz({...quiz, description: content}))
   };
 
-  const handleSave = async() => { 
+  const handleSave = async() => {
     await client.saveQuiz(quiz);
+    dispatch(setQuestions([]));
+    navigate(`/Kanbas/Courses/${courseId}/quizzes`);
   };
-  const handleSaveAndPublish = async() => { 
+  const handleSaveAndPublish = async() => {
       const resp = await client.saveQuiz(quiz);
       await client.publishQuiz(resp._id);
-      navigate(`/Kanbas/Courses/${cid}/quizzes`);
+      dispatch(setQuestions([]));
+      navigate(`/Kanbas/Courses/${courseId}/quizzes`);
   };
   const handleCancel = () => { 
-      setQuiz({
-        timeLimit: 20,
-        type: "Graded Quiz",
-        assignmentGroup: "Quizzes",
-        isPublished: false,
-        shuffleAnswers: true,
-        multipleAttempts: false,
-        oneQuestionAtATime: true,
-        webcamRequired: false,
-        lockQuestionsAfterAnswering: false,
-      })
-      navigate(`/Kanbas/Courses/${cid}/quizzes`);
+      dispatch(resetQuiz());
+      dispatch(setQuestions([]));
+      navigate(`/Kanbas/Courses/${courseId}/quizzes`);
   };
 
   return (
@@ -66,7 +62,7 @@ const Quizzes = () => {
             type="text"
             className="quiz-title-input"
             value={quiz.title}
-            onChange={(e) => setQuiz({...quiz, title: e.target.value})}
+            onChange={(e) => dispatch(setCurrentQuiz({...quiz, title: e.target.value}))}
             placeholder="Unnamed Quiz"
           />
 
@@ -100,7 +96,7 @@ const Quizzes = () => {
 
 
           <label htmlFor="quizType">Quiz Type</label>
-          <select id="quizType" value={quiz.quizType} onChange={(e) => setQuiz({...quiz, quizType: e.target.value})}>
+          <select id="quizType" value={quiz.quizType} onChange={(e) => dispatch(setCurrentQuiz({...quiz, quizType: e.target.value}))}>
             <option value="Graded Quiz">Graded Quiz</option>
             <option value="Practice Quiz">Practice Quiz</option>
             <option value="Graded Survey">Graded Survey</option>
@@ -108,7 +104,7 @@ const Quizzes = () => {
           </select>
 
           <label htmlFor="assignmentGroup">Assignment Group</label>
-          <select id="assignmentGroup" value={quiz.assignmentGroup} onChange={(e) => setQuiz({...quiz, assignmentGroup: e.target.value})}>
+          <select id="assignmentGroup" value={quiz.assignmentGroup} onChange={(e) => dispatch(setCurrentQuiz({...quiz, assignmentGroup: e.target.value}))}>
             <option value="Quizzes">Quizzes</option>
             <option value="Exams">Exams</option>
             <option value="Assignment">Assignment</option>
@@ -117,7 +113,7 @@ const Quizzes = () => {
 
           <div className="quiz-options">
             <label>
-              <input type="checkbox" checked={quiz.shuffleAnswers} onChange={(e) => setQuiz({...quiz, shuffleAnswerse: e.target.checked})} />
+              <input type="checkbox" checked={quiz.shuffleAnswers} onChange={(e) => dispatch(setCurrentQuiz({...quiz, shuffleAnswerse: e.target.checked}))} />
               Shuffle Answers
             </label>
 
@@ -128,14 +124,14 @@ const Quizzes = () => {
                 id="timeLimit"
                 className="time-limit-input"
                 value={quiz.timeLimit}
-                onChange={(e) => setQuiz({...quiz, timeLimit: e.target.value})}
+                onChange={(e) => dispatch(setCurrentQuiz({...quiz, timeLimit: e.target.value}))}
                 min="1"
               />
               <span className="time-label">minutes</span>
             </div>
 
             <label>
-              <input type="checkbox" checked={quiz.allowMultipleAttempts} onChange={(e) => setQuiz({...quiz, allowMultipleAttempts: e.target.checked})} />
+              <input type="checkbox" checked={quiz.allowMultipleAttempts} onChange={(e) => dispatch(setCurrentQuiz({...quiz, allowMultipleAttempts: e.target.checked}))} />
               Allow Multiple Attempts
             </label>
 
@@ -146,14 +142,14 @@ const Quizzes = () => {
                 id="quizPoints"
                 className="quiz-points-input"
                 value={quiz.points}
-                onChange={(e) => setQuiz({...quiz, points: Number(e.target.value)})}
+                onChange={(e) => dispatch(setCurrentQuiz({...quiz, points: Number(e.target.value)}))}
                 min="0"
               />
             </div>
 
             <div className="field">
               <label>
-                <input type="checkbox" checked={quiz.showCorrectAnswers} onChange={(e) => setQuiz({...quiz, showCorrectAnswers: e.target.checked})} />
+                <input type="checkbox" checked={quiz.showCorrectAnswers} onChange={(e) => dispatch(setCurrentQuiz({...quiz, showCorrectAnswers: e.target.checked}))} />
                 Show Correct Answers
               </label>
             </div>
@@ -161,23 +157,23 @@ const Quizzes = () => {
 
             <div className="field">
               <label>Access Code:</label>
-              <input type="text" value={quiz.accessCode} onChange={(e) => setQuiz({...quiz, accessCode: e.target.value})} />
+              <input type="text" value={quiz.accessCode} onChange={(e) => dispatch(setCurrentQuiz({...quiz, accessCode: e.target.value}))} />
             </div>
             <div className="field">
               <label>
-                <input type="checkbox" checked={quiz.oneQuestionAtATime} onChange={(e) => setQuiz({...quiz, oneQuestionAtATime: e.target.checked})} />
+                <input type="checkbox" checked={quiz.oneQuestionAtATime} onChange={(e) => dispatch(setCurrentQuiz({...quiz, oneQuestionAtATime: e.target.checked}))} />
                 One Question at a Time
               </label>
             </div>
             <div className="field">
               <label>
-                <input type="checkbox" checked={quiz.webcamRequired} onChange={(e) => setQuiz({...quiz, webcamRequired: e.target.checked})} />
+                <input type="checkbox" checked={quiz.webcamRequired} onChange={(e) => dispatch(setCurrentQuiz({...quiz, webcamRequired: e.target.checked}))} />
                 Webcam Required
               </label>
             </div>
             <div className="field">
               <label>
-                <input type="checkbox" checked={quiz.lockQuestionsAfterAnswering} onChange={(e) => setQuiz({...quiz, lockQuestionsAfterAnswering: e.target.checked})} />
+                <input type="checkbox" checked={quiz.lockQuestionsAfterAnswering} onChange={(e) => dispatch(setCurrentQuiz({...quiz, lockQuestionsAfterAnswering: e.target.checked}))} />
                 Lock Questions After Answering
               </label>
             </div>
@@ -190,7 +186,7 @@ const Quizzes = () => {
                 type="text"
                 id="assignTo"
                 value={quiz.assignTo}
-                onChange={(e) => setQuiz({...quiz, assignTo: e.target.value})}
+                onChange={(e) => dispatch(setCurrentQuiz({...quiz, assignTo: e.target.value}))}
               />
             </div>
 
@@ -200,7 +196,7 @@ const Quizzes = () => {
                 type="datetime-local"
                 id="dueDate"
                 value={quiz.dueDate}
-                onChange={(e) => setQuiz({...quiz, dueDate: e.target.value})}
+                onChange={(e) => dispatch(setCurrentQuiz({...quiz, dueDate: e.target.value}))}
               />
             </div>
 
@@ -211,7 +207,7 @@ const Quizzes = () => {
                   type="datetime-local"
                   id="availableFrom"
                   value={quiz.availableFrom}
-                  onChange={(e) => setQuiz({...quiz, availableFrom: e.target.value})}
+                  onChange={(e) => dispatch(setCurrentQuiz({...quiz, availableFrom: e.target.value}))}
                 />
               </div>
 
@@ -221,7 +217,7 @@ const Quizzes = () => {
                   type="datetime-local"
                   id="untilDate"
                   value={quiz.untilDate}
-                  onChange={(e) => setQuiz({...quiz, untilDate: e.target.value})}
+                  onChange={(e) => dispatch(setCurrentQuiz({...quiz, untilDate: e.target.value}))}
                 />
               </div>
             </div>
