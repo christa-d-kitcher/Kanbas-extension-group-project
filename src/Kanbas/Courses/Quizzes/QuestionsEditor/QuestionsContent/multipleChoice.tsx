@@ -2,11 +2,11 @@ import React, {useEffect} from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { KanbasState } from "../../../../store";
-import { setQuestion, setQuestions, addQuestion, updateQuestion, addChoice, deleteChoiceById, resetQuestion} from "../questionsReducer";
+import { setQuestion, setQuestions, addQuestion, updateQuestion, addChoice, deleteChoiceById, resetQuestion, updateChoiceById, updateCorrectById} from "../questionsReducer";
 import { FaArrowRight, FaTrash } from "react-icons/fa"
 
 function MultipleChoice () {
-  const { courseId, quizId } = useParams();
+  const { courseId, quizId, questionId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const question = useSelector((state: KanbasState) => state.questionsReducer.question);
@@ -20,23 +20,27 @@ function MultipleChoice () {
   }
 
   const handleUpdateQuestion = () => {
-    const correct = []
-    const choices = [];
+    const index = questions.findIndex((q) => q._id === questionId);
+    if (index !== -1) {
+      dispatch(updateQuestion(question));
+    } else {
+      const correct = []
+      const choices = [];
 
-    const answer = document.getElementById("m_correct") as HTMLInputElement;
-    correct.push(answer.value);
+      const answer = document.getElementById("m_correct") as HTMLInputElement;
+      correct.push(answer.value);
 
-    choices.push(answer.value);
+      choices.push(answer.value);
 
-    for (let i = 0; i < question.choices.length; i++) {
-      const choice = document.getElementById(i.toString()) as HTMLInputElement;
-      choices.push(choice.value);
+      for (let i = 0; i < question.choices.length; i++) {
+        const choice = document.getElementById(i.toString()) as HTMLInputElement;
+        choices.push(choice.value);
+      }
+
+      dispatch(setQuestion({...question, choices: choices, correct: correct}))
+
+      dispatch(addQuestion({...question, choices: choices, correct: correct}));
     }
-
-    dispatch(setQuestion({...question, choices: choices, correct: correct}))
-
-    dispatch(addQuestion({...question, choices: choices, correct: correct}));
-
     dispatch(resetQuestion());
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
@@ -45,7 +49,7 @@ function MultipleChoice () {
     <div className = "flex">
       <p> Enter your question and multiple answers, then select the one correct answer. </p>
       <h4> Question: </h4>
-      <textarea rows = {3} className = "form-control" id = "m_question" onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
+      <textarea rows = {3} className = "form-control" id = "m_question" value = {question.description} onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
       <h4> Answers: </h4>
 
       <div className = "row">
@@ -55,7 +59,8 @@ function MultipleChoice () {
         </div>
 
         <div className = "col-7">
-          <input type = "text" className = "form-control w-25" id = "m_correct" />
+          <input type = "text" className = "form-control w-25" id = "m_correct" value = {question.correct} onChange = { (e) => {dispatch(updateCorrectById({index: 0, correct: e.target.value}));
+                                                                                                                                dispatch(updateChoiceById({index: 0, choice: e.target.value}))}}/>
         </div>
       </div>
 
@@ -70,7 +75,7 @@ function MultipleChoice () {
               </div>
 
               <div className = "col-7">
-                <input type = "text" className = "form-control w-25" id = {index.toString()} />
+                <input type = "text" className = "form-control w-25" id = {index.toString()} value = {choice} onChange = { (e) => dispatch(updateCorrectById({ index: index, choice: e.target.value }))} />
               </div>
 
               <div className = "col-2 ms-5">

@@ -18,7 +18,7 @@ interface QuestionState {
 const initialState: QuestionState = {
   question: {
     id: '',
-    type: 'multiple',
+    type: 'MULTIPLE_CHOICE',
     title: 'new question',
     choices: [''],
     correct: [''],
@@ -43,8 +43,24 @@ const questionSlice = createSlice({
         choices: state.question.choices?.filter((choice, index) => index !== action.payload),
       }
     },
+    updateChoiceById: (state, action) => {
+      state.question = {
+        ...state.question,
+        choices: state.question.choices?.map((choice, index) =>
+          index === action.payload.index ? action.payload.choice : choice
+        ),
+      }
+    },
+    updateCorrectById: (state, action) => {
+      state.question = {
+        ...state.question,
+        correct: state.question.correct.map((correct, index) =>
+          index === action.payload.index ? action.payload.correct : correct
+        ),
+      }
+    },
     resetQuestion: state => {
-      state.question = { id: '', type: 'multiple', title: 'new question', correct: [''], points: 0 }
+      state.question = { id: '', type: 'MULTIPLE_CHOICE', title: 'new question', correct: [''], points: 0 }
     },
     setQuestion: (state, action) => {
       state.question = { ...action.payload }
@@ -63,17 +79,17 @@ const questionSlice = createSlice({
       }
     },
     setQuestions: (state, action) => {
-      state.questions = { ...action.payload }
+      state.questions = action.payload
     },
     addQuestion: (state, action) => {
       state.questions = [...state.questions, action.payload]
     },
     deleteQuestion: (state, action) => {
-      state.questions = state.questions.filter(question => question.id !== action.payload)
+      state.questions = state.questions.filter(question => question._id !== action.payload)
     },
     updateQuestion: (state, action) => {
       state.questions = state.questions.map(question => {
-        if (question.id === action.payload.id) {
+        if (question._id === action.payload._id) {
           return action.payload
         }
         return question
@@ -91,5 +107,7 @@ export const {
   addChoice,
   deleteChoiceById,
   resetQuestion,
+  updateChoiceById,
+  updateCorrectById,
 } = questionSlice.actions
 export default questionSlice.reducer

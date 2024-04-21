@@ -22,9 +22,9 @@ function Question () {
          </div>
          <div className = "col-6">
           <select className = "form-control w-50 ms-1  mt-2" onChange = {(e) => dispatch(setQuestion({...question, type: e.target.value}))}>
-            <option value = "multiple" selected>Multiple Choice</option>
-            <option value = "tf">True/False</option>
-            <option value = "fitb">Fill in the Blank</option>
+            <option value = "MULTIPLE_CHOICE" selected={question.type === "MULTIPLE_CHOICE"}>Multiple Choice</option>
+            <option value = "TRUE_FALSE" selected={question.type === "TRUE_FALSE"}>True/False</option>
+            <option value = "FILL_IN_BLANKS" selected={question.type === "FILL_IN_BLANKS"}>Fill in the Blank</option>
           </select>
          </div>
 
@@ -39,13 +39,13 @@ function Question () {
       <hr/>
 
       <div>
-        {question?.type === "multiple" && (
+        {question?.type === "MULTIPLE_CHOICE" && (
             <MultipleChoice />
         )}
-        {question?.type === "tf" && (
+        {question?.type === "TRUE_FALSE" && (
           <TrueFalse />
         )}
-        {question?.type === "fitb" && (
+        {question?.type === "FILL_IN_BLANKS" && (
           <FillInTheBlank />
         )}
 
