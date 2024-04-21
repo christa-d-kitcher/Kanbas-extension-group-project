@@ -52,3 +52,8 @@ export const getQuizzesByCourseId = async (courseId: string) => {
   const response = await axios.get(`${QUIZZES_API}/course/${courseId}`)
   return response.data
 }
+
+export const getQuestionsByQuizId = async (quizId: string) => {
+  const response = await axios.get(`${QUIZZES_API}/${quizId}/questions`)
+  return response.data
+}

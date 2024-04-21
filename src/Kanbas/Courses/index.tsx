@@ -12,6 +12,7 @@ import QuizaDetailEditor from './Quizzes/DetailEditor'
 import QuestionContent from './Quizzes/QuestionsEditor/QuestionsContent'
 import Grades from './Grades'
 import { FaGlasses } from 'react-icons/fa'
+import QuestionReview from './Quizzes/QuestionsEditor/QuestionReview'
 import axios from 'axios'
 
 const API_BASE = process.env.REACT_APP_BASE_API_URL
@@ -181,6 +182,7 @@ export default function Courses({ courses }: { courses: any[] }) {
           <Route path="Quizzes/:quizId/QuizDetail" element={<QuizDetail />} />
           <Route path="Quizzes/:quizId/DetailEditor" element={<QuizaDetailEditor />} />
           <Route path="Quizzes/:quizId/QuestionEditor/:questionId" element={<QuestionContent />} />
+          <Route path="Quizzes/:quizId/QuestionReview" element={<QuestionReview />} />
           <Route path="Grades" element={<Grades />} />
           <Route path="People" element={<h1>People</h1>} />
           <Route path="PanoptoVideo" element={<h1>Panopto Video</h1>} />

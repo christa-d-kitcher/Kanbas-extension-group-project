@@ -22,7 +22,9 @@ const Quizzes = () => {
   const questions = useSelector((state: KanbasState) => state.questionsReducer.questions)
 
   useEffect(() => {
-    dispatch(setQuestions(quiz.questions))
+    const questions = client.getQuestionsByQuizId(quiz._id)
+    // console.log('questions', questions)
+    dispatch(setQuestions(questions))
   }, [])
 
   const handleEditorChange = (content: string) => {
