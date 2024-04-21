@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
 import { setQuestions, setQuestion } from './questionsReducer'
-import { setCurrentQuiz, setQuizzes, resetQuiz } from '../quizReducer'
+import { setCurrentQuiz, setQuizzes, resetQuiz, updateQuiz, addQuiz } from '../quizReducer'
 import * as client from '../client'
 
 function QuestionsEditor() {
@@ -19,11 +19,13 @@ function QuestionsEditor() {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const questionsData = await client.getQuestionsByQuizId(quizId || '')
-      dispatch(setQuestions(questionsData))
+      const questionsData = await client.getQuestionsByQuizId(quizId || '').then((data) => {
+        dispatch(setQuestions(data))
+      })
+      //dispatch(setQuestions(questionsData))
     }
     fetchQuestions()
-  }, [dispatch, question, questionList.length])
+  }, [dispatch, question, questionList.length, questionList])
 
   const questionType = (type: any) => {
     switch (type) {
@@ -48,20 +50,30 @@ function QuestionsEditor() {
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSave = async () => {
-    await client.updateQuiz(quiz)
+    dispatch(setQuestions(questionList))
+    const index = quizzes.findIndex((q) => q._id === quizId)
+    if (index !== -1) {
+      await client.updateQuiz(quiz)
+    } else {
+      await client.saveQuiz(quiz)
+    }
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
-    dispatch(setCurrentQuiz(quiz))
-    dispatch(setQuestions(quiz.questions))
-    dispatch(setQuestions(quiz.questions))
     dispatch(setQuizzes(quizzesData))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSaveAndPublish = async () => {
-    await client.updateQuiz(quiz)
-    await client.publishQuiz(quizId || '')
+    dispatch(setQuestions(questionList))
+    const index = quizzes.findIndex((q) => q._id === quizId)
+    if (index !== -1) {
+      await client.updateQuiz(quiz)
+      await client.publishQuiz(quizId || '')
+    } else {
+      await client.saveQuiz(quiz)
+      await client.publishQuiz(quizId || '')
+    }
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
-    dispatch(setCurrentQuiz(quiz))
-    dispatch(setQuestions(quiz.questions))
     dispatch(setQuizzes(quizzesData))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   return (

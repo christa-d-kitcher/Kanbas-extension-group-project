@@ -4,12 +4,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Editor } from '@tinymce/tinymce-react'
 import moment from 'moment'
 import { KanbasState } from '../../../store'
-import { addQuiz, updateQuiz, resetQuiz } from '../quizReducer'
+import { setCurrentQuiz, addQuiz, updateQuiz, resetQuiz, setQuizzes } from '../quizReducer'
 import * as client from '../client'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
 import QuestionsEditor from '../QuestionsEditor'
 import './index.css'
+import { setQuestions, setQuestion } from '../QuestionsEditor/questionsReducer'
 
 export default function QuizEditor() {
   const navigate = useNavigate()
@@ -17,30 +18,10 @@ export default function QuizEditor() {
   const [activeTab, setActiveTab] = useState('Details')
   const { courseId, quizId } = useParams()
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
-  const quiz = quizzes.find(q => q._id === quizId) || {
-    _id: null,
-    title: 'New Quiz',
-    description: 'Quiz Description',
-    points: 0,
-    assignTo: '',
-    dueDate: moment().add(7, 'days').format('YYYY-MM-DDTHH:mm'),
-    availableFromDate: moment().format('YYYY-MM-DDTHH:mm'),
-    availableUntilDate: moment().add(14, 'days').format('YYYY-MM-DDTHH:mm'),
-    isPublished: false,
-  }
+  const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
 
-  const [title, setTitle] = useState(quiz.title || 'New Quiz')
-  const [description, setDescription] = useState(quiz.description || 'Quiz Description')
-  const [points, setPoints] = useState(quiz.points || 0)
-  const [assignTo, setAssignTo] = useState(quiz.assignTo || '')
-  const [dueDate, setDueDate] = useState(
-    quiz.dueDate || moment().add(7, 'days').format('YYYY-MM-DDTHH:mm')
-  )
-  const [availableFromDate, setAvailableFromDate] = useState(
-    quiz.availableFromDate || moment().format('YYYY-MM-DDTHH:mm')
-  )
-  const [availableUntilDate, setAvailableUntilDate] = useState(
-    quiz.availableUntilDate || moment().add(14, 'days').format('YYYY-MM-DDTHH:mm')
+  const questionList = Object.values(
+    useSelector((state: KanbasState) => state.questionsReducer.questions)
   )
 
   const handleAddQuiz = async (newQuiz: any) => {
@@ -55,48 +36,36 @@ export default function QuizEditor() {
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
-  const handleSave = () => {
-    const newQuiz = {
-      ...quiz,
-      title,
-      description,
-      points,
-      dueDate,
-      availableFromDate,
-      availableUntilDate,
-      assignTo,
-      courseId: courseId,
-    }
-    if (quiz._id) {
-      console.log(newQuiz)
-      handleUpdateQuiz(newQuiz)
+  const handleSave = async () => {
+    dispatch(setQuestions(questionList))
+    const index = quizzes.findIndex((q) => q._id === quizId)
+    if (index !== -1) {
+      await client.updateQuiz(quiz)
     } else {
-      handleAddQuiz(newQuiz)
+      await client.saveQuiz(quiz)
     }
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+    dispatch(setQuizzes(quizzesData))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   const handleEditorChange = (content: any, editor: any) => {
-    setDescription(content)
+    dispatch(setCurrentQuiz({ ...quiz, description: content }))
   }
 
   const handleSaveAndPublish = async () => {
-    const newQuiz = {
-      ...quiz,
-      title,
-      description,
-      points,
-      dueDate,
-      availableFromDate,
-      availableUntilDate,
-      assignTo,
-      courseId: courseId,
-      isPublished: true,
-    }
-    if (quiz._id) {
-      handleUpdateQuiz(newQuiz)
+    dispatch(setQuestions(questionList))
+    const index = quizzes.findIndex((q) => q._id === quizId)
+    if (index !== -1) {
+      await client.updateQuiz(quiz)
+      await client.publishQuiz(quizId || '')
     } else {
-      handleAddQuiz(newQuiz)
+      await client.saveQuiz(quiz)
+      await client.publishQuiz(quizId || '')
     }
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+    dispatch(setQuizzes(quizzesData))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   return (
@@ -114,7 +83,7 @@ export default function QuizEditor() {
             <MdOutlineUnpublished /> Not Published
           </span>
         )}
-        <h5 className="float-end mt-2">Points: {points}</h5>
+        <h5 className="float-end mt-2">Points: {quiz.points}</h5>
       </div>
       <hr />
       <div className="tabs">
@@ -137,13 +106,13 @@ export default function QuizEditor() {
           <input
             type="text"
             className="form-control"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
+            value={quiz.title}
+            onChange={e => dispatch(setCurrentQuiz({ ...quiz, title: e.target.value }))}
           />
           <label>Description:</label>
           <Editor
             apiKey="rbhkgq7fs4tvui8zgsogy4uf9kwqbr2rlc47ipr5b9yxtnlz"
-            value={description}
+            value={quiz.description}
             onEditorChange={handleEditorChange}
             init={{
               height: 500,
@@ -167,36 +136,36 @@ export default function QuizEditor() {
             <input
               type="number"
               className="form-control"
-              value={points}
-              onChange={e => setPoints(parseInt(e.target.value, 10))}
+              value={quiz.points}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value)}))}
             />
             <label>Assign to:</label>
             <input
               type="text"
               className="form-control"
-              value={assignTo}
-              onChange={e => setAssignTo(e.target.value)}
+              value={quiz.assignTo}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, assignTo: e.target.value }))}
             />
             <label>Due Date:</label>
             <input
               type="datetime-local"
               className="form-control"
-              value={dueDate}
-              onChange={e => setDueDate(e.target.value)}
+              value={quiz.dueDate.slice(0, 16)}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, dueDate: e.target.value }))}
             />
             <label>Available From:</label>
             <input
               type="datetime-local"
               className="form-control"
-              value={availableFromDate}
-              onChange={e => setAvailableFromDate(e.target.value)}
+              value={quiz.availableDate.slice(0, 16)}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, availableDate: e.target.value }))}
             />
             <label>Until Date:</label>
             <input
               type="datetime-local"
               className="form-control"
-              value={availableUntilDate}
-              onChange={e => setAvailableUntilDate(e.target.value)}
+              value={quiz.untilDate.slice(0, 16)}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, untilDate: e.target.value }))}
             />
           </div>
           <hr />

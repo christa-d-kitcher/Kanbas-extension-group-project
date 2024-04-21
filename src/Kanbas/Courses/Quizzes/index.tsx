@@ -48,6 +48,7 @@ const QuizList = () => {
   const handleQuizClick = (quizId: string) => {
     const currentQuiz = quizzes.find(quiz => quiz._id === quizId)
     dispatch(setCurrentQuiz(currentQuiz))
+    dispatch(setQuestions(currentQuiz.questions))
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuizDetail`)
   }
 
