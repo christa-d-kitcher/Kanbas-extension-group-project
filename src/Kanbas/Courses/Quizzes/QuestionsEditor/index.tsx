@@ -20,10 +20,10 @@ function QuestionsEditor() {
   useEffect(() => {
     const fetchQuestions = async () => {
       const questionsData = await client.getQuestionsByQuizId(quizId || '').then((data) => {
-        dispatch(setQuestions(data))
-      })
+        dispatch(setQuestions(data))})
+      dispatch(setCurrentQuiz({ ...quiz, questions: questionsData }))
+      }
       //dispatch(setQuestions(questionsData))
-    }
     fetchQuestions()
   }, [dispatch, question, questionList.length, questionList])
 
@@ -51,6 +51,7 @@ function QuestionsEditor() {
   }
   const handleSave = async () => {
     dispatch(setQuestions(questionList))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
@@ -63,6 +64,7 @@ function QuestionsEditor() {
   }
   const handleSaveAndPublish = async () => {
     dispatch(setQuestions(questionList))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
@@ -89,7 +91,7 @@ function QuestionsEditor() {
             </tr>
           </thead>
           <tbody>
-            {questionList.map((question: any) => (
+            {questionList?.map((question: any) => (
               <tr key={question._id}>
                 <td>
                   <p>{question.title}</p>

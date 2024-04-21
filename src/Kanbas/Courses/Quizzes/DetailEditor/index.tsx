@@ -24,20 +24,9 @@ export default function QuizEditor() {
     useSelector((state: KanbasState) => state.questionsReducer.questions)
   )
 
-  const handleAddQuiz = async (newQuiz: any) => {
-    const createdQuiz = await client.saveQuiz(newQuiz)
-    dispatch(addQuiz(createdQuiz))
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
-  }
-
-  const handleUpdateQuiz = async (updatedQuiz: any) => {
-    await client.updateQuiz(updatedQuiz)
-    dispatch(updateQuiz(updatedQuiz))
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
-  }
-
   const handleSave = async () => {
     dispatch(setQuestions(questionList))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
@@ -55,6 +44,7 @@ export default function QuizEditor() {
 
   const handleSaveAndPublish = async () => {
     dispatch(setQuestions(questionList))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
