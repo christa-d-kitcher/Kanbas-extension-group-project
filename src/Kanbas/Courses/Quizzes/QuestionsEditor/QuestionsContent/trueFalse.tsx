@@ -7,7 +7,7 @@ import { FaArrowRight, FaTrash } from "react-icons/fa"
 
 
 function TrueFalse () {
-  const { courseId, quizId } = useParams();
+  const { courseId, quizId, questionId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const question = useSelector((state: KanbasState) => state.questionsReducer.question);
@@ -18,10 +18,15 @@ function TrueFalse () {
   }
 
   const handleUpdateQuestion = () => {
-    const correct = [document.querySelector('input[name="truefalse"]:checked')?.id];
-    const choices = ["TRUE", "FALSE"];
-
-    dispatch(addQuestion({...question, correct: correct, choices: choices}));
+    const index = questions.findIndex((q) => q._id === questionId);
+    if (index !== -1) {
+      dispatch(updateQuestion(question));
+    } else {
+      const correct = [document.querySelector('input[name="truefalse"]:checked')?.id];
+      const choices = ["TRUE", "FALSE"];
+      dispatch(addQuestion({...question, correct: correct, choices: choices}));
+    }
+    dispatch(resetQuestion());
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
   }
 
