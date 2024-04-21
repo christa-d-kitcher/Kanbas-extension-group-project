@@ -40,22 +40,22 @@ function TrueFalse () {
       <div className = "row">
         <div className = "col-2 ms-4">
           <FaArrowRight />
-          <label className = "ms-2" htmlFor = "true" > True: </label>
+          <label className = "ms-2" htmlFor = "TRUE" > True: </label>
         </div>
 
         <div className = "col-7">
-          <input type = "radio" id = "true" name = "truefalse"  checked={question.correct && question.correct[0] === "TRUE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['TRUE'] }))}/>
+          <input type = "radio" id = "TRUE" name = "truefalse"  checked={question.correct && question.correct[0] === "TRUE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['TRUE'] }))}/>
         </div>
       </div>
 
       <div className = "row">
         <div className = "col-2 ms-4">
           <FaArrowRight />
-          <label className = "ms-2" htmlFor = "false"> False: </label>
+          <label className = "ms-2" htmlFor = "FALSE"> False: </label>
         </div>
 
         <div className = "col-7">
-          <input type = "radio" id = "false" name = "truefalse" checked={question.correct && question.correct[0] === "FALSE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['FALSE'] }))} />
+          <input type = "radio" id = "FALSE" name = "truefalse" checked={question.correct && question.correct[0] === "FALSE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['FALSE'] }))} />
         </div>
       </div>
 

@@ -30,8 +30,6 @@ function MultipleChoice () {
       const answer = document.getElementById("m_correct") as HTMLInputElement;
       correct.push(answer.value);
 
-      choices.push(answer.value);
-
       for (let i = 0; i < question.choices.length; i++) {
         const choice = document.getElementById(i.toString()) as HTMLInputElement;
         choices.push(choice.value);
@@ -59,8 +57,7 @@ function MultipleChoice () {
         </div>
 
         <div className = "col-7">
-          <input type = "text" className = "form-control w-25" id = "m_correct" value = {question.correct} onChange = { (e) => {dispatch(updateCorrectById({index: 0, correct: e.target.value}));
-                                                                                                                                dispatch(updateChoiceById({index: 0, choice: e.target.value}))}}/>
+          <input type = "text" className = "form-control w-25" id = "m_correct" value = {question.correct} onChange = { (e) => {dispatch(updateCorrectById({index: 0, correct: e.target.value}))}}/>
         </div>
       </div>
 
@@ -75,7 +72,7 @@ function MultipleChoice () {
               </div>
 
               <div className = "col-7">
-                <input type = "text" className = "form-control w-25" id = {index.toString()} value = {choice} onChange = { (e) => dispatch(updateCorrectById({ index: index, choice: e.target.value }))} />
+                <input type = "text" className = "form-control w-25" id = {index.toString()} value = {choice} onChange = { (e) => dispatch(updateChoiceById({ index: index, choice: e.target.value }))} />
               </div>
 
               <div className = "col-2 ms-5">

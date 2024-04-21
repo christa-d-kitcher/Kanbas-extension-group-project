@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Editor } from '@tinymce/tinymce-react'
 import moment from 'moment'
 import { KanbasState } from '../../../store'
-import { addQuiz, updateQuiz } from '../quizReducer'
+import { addQuiz, updateQuiz, resetQuiz } from '../quizReducer'
 import * as client from '../client'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
@@ -68,6 +68,7 @@ export default function QuizEditor() {
       courseId: courseId,
     }
     if (quiz._id) {
+      console.log(newQuiz)
       handleUpdateQuiz(newQuiz)
     } else {
       handleAddQuiz(newQuiz)
@@ -205,7 +206,7 @@ export default function QuizEditor() {
               <label htmlFor="notify">Notify users this quiz has changed</label>
             </div>
             <div className="float-end">
-              <Link to={`/Kanbas/Courses/${courseId}/Quizzes`} className="btn btn-light">
+              <Link to={`/Kanbas/Courses/${courseId}/Quizzes`} className="btn btn-light" onClick={ (e) => dispatch(resetQuiz())}>
                 Cancel
               </Link>
               <button onClick={handleSaveAndPublish} className="btn btn-light mx-3">

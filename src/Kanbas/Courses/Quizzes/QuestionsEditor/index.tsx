@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
 import { setQuestions, setQuestion } from './questionsReducer'
-import { setCurrentQuiz, setQuizzes } from '../quizReducer'
+import { setCurrentQuiz, setQuizzes, resetQuiz } from '../quizReducer'
 import * as client from '../client'
 
 function QuestionsEditor() {
@@ -44,6 +44,7 @@ function QuestionsEditor() {
     dispatch(setQuestions(questionsData))
   }
   const handleCancel = () => {
+    dispatch(resetQuiz());
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSave = async () => {
