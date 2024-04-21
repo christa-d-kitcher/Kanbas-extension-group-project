@@ -4,13 +4,13 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { MdErrorOutline } from 'react-icons/md'
 import { CiSquareChevRight, CiEdit } from 'react-icons/ci'
-import { FaCaretRight } from 'react-icons/fa'
+import { FaCaretRight, FaCaretLeft } from 'react-icons/fa'
 import { KanbasState } from '../../../../store'
 import * as client from '../../client'
 import { updateQuiz } from '../../quizReducer'
 
 function QuestionReview() {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const { quizId, courseId } = useParams()
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
@@ -19,7 +19,7 @@ function QuestionReview() {
     const questionData = state.questionsReducer.questions
     return questionData ? Object.values(questionData) : []
   })
-  const [questionNum, setQuestionNum] = useState(1)
+  const [questionNum, setQuestionNum] = useState(0)
   const [ifFirst, setIfFirst] = useState(false)
 
   const currentDate = new Date()
@@ -31,10 +31,13 @@ function QuestionReview() {
     hour12: true,
   })
   const handleNext = () => {
-    const isLastQuestion = questionNum === questions.length - 1;
-    setQuestionNum(prev => (prev + 1) % questions.length); // Loop back to first question after the last one
-    setIfFirst(isLastQuestion);
-  }  
+    const isLastQuestion = questionNum === questions.length - 1
+    setQuestionNum(prev => (prev + 1) % questions.length) // Loop back to first question after the last one
+    setIfFirst(isLastQuestion)
+  }
+  const handlePre = () => {
+    setQuestionNum(prev => (prev - 1 + questions.length) % questions.length) // Loop back to last question after the first one
+  }
 
   function questionAnswer() {
     const question = questions[questionNum]
@@ -68,10 +71,10 @@ function QuestionReview() {
     dispatch(updateQuiz(updatedQuiz))
   }
 
-const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = () => {
     const updatedQuiz = { ...currentQuiz, isPublished: true }
-    handleUpdateQuiz(quizId ?? "")
-}
+    handleUpdateQuiz(quizId ?? '')
+  }
 
   function renderQuestionList() {
     // console.log(questions)
@@ -120,6 +123,9 @@ const handleSubmitQuiz = () => {
             <button className="btn btn-light float-end me-5 mt-3" onClick={handleNext}>
               {ifFirst ? 'First' : 'Next'} <FaCaretRight />
             </button>
+            <button className="btn btn-light float-end me-3 mt-3" onClick={handlePre}>
+              <FaCaretLeft /> Previous
+            </button>
           </div>
         </div>
         <div className="mb-5 pd-5">
@@ -127,7 +133,9 @@ const handleSubmitQuiz = () => {
             className="p-3 me-4 my-3 clearfix text-center"
             style={{ color: '#CC5546', fontSize: '18px', border: '1px solid #CFCFCF' }}
           >
-            <button className="btn btn-light float-end ms-5" onClick={handleSubmitQuiz}>Submit Quiz</button>
+            <button className="btn btn-light float-end ms-5" onClick={handleSubmitQuiz}>
+              Submit Quiz
+            </button>
             <div className="float-end mt-1" style={{ color: '#55666E' }}>
               Quiz saved at {formattedDate}
             </div>

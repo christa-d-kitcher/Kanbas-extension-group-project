@@ -3,6 +3,8 @@ import './index.css'
 import { Editor } from '@tinymce/tinymce-react' // use the advanced editor called TinyMCE for the Description (WYSIWYG),
 import * as client from '../client'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { BsThreeDotsVertical } from 'react-icons/bs'
+import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
 import { useSelector, useDispatch } from 'react-redux'
 //need to install TinyMCE React integration:npm install @tinymce/tinymce-react
 import QuestionsEditor from '../QuestionsEditor'
@@ -22,10 +24,16 @@ const Quizzes = () => {
   const questions = useSelector((state: KanbasState) => state.questionsReducer.questions)
 
   useEffect(() => {
-    const questions = client.getQuestionsByQuizId(quiz._id)
-    // console.log('questions', questions)
-    dispatch(setQuestions(questions))
-  }, [])
+    const fetchQuestions = async () => {
+      const questions = await client.getQuestionsByQuizId(quiz._id)
+      dispatch(setQuestions(questions))
+      // console.log('questions', questions);
+      // questions.forEach((question:any) => {
+      //   dispatch(setQuestions(question));
+      // });
+    }
+    fetchQuestions()
+  }, [dispatch, quiz._id])
 
   const handleEditorChange = (content: string) => {
     dispatch(setCurrentQuiz({ ...quiz, description: content }))
@@ -51,7 +59,26 @@ const Quizzes = () => {
   }
 
   return (
-    <div className="quiz-container">
+    <div className="container my-3">
+      <div className="clearfix">
+        <button className="btn btn-light float-end">
+          <BsThreeDotsVertical />
+        </button>
+        <div className="float-end mt-2 mx-3">
+          {quiz.isPublished ? (
+            <h5 className="text-success">
+              <MdOutlinePublishedWithChanges /> Published
+            </h5>
+          ) : (
+            <h5 className="text-light">
+              {' '}
+              <MdOutlineUnpublished /> Not Published
+            </h5>
+          )}
+        </div>
+        <h5 className="float-end mt-2">Points: {quiz.points}</h5>
+      </div>
+      <hr />
       <div className="tabs">
         <button
           className={`tab ${activeTab === 'Details' ? 'active' : ''}`}
@@ -66,7 +93,6 @@ const Quizzes = () => {
           Questions
         </button>
       </div>
-
       {activeTab === 'Details' && (
         <div className="details-container">
           <input

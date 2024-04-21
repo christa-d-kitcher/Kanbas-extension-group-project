@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 interface Question {
-  id: number
+  _id?: string
+  id: string
   type: string
   title: string
   choices?: string[]
@@ -16,7 +17,7 @@ interface QuestionState {
 
 const initialState: QuestionState = {
   question: {
-    id: -1,
+    id: '',
     type: 'multiple',
     title: 'new question',
     choices: [''],
@@ -43,7 +44,7 @@ const questionSlice = createSlice({
       }
     },
     resetQuestion: state => {
-      state.question = { id: -1, type: 'multiple', title: 'new question', correct: [''], points: 0 }
+      state.question = { id: '', type: 'multiple', title: 'new question', correct: [''], points: 0 }
     },
     setQuestion: (state, action) => {
       state.question = { ...action.payload }
