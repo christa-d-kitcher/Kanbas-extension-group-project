@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
-import { setQuestions } from './questionsReducer'
+import { setQuestions, setQuestion } from './questionsReducer'
 import { setCurrentQuiz, setQuizzes } from '../quizReducer'
 import * as client from '../client'
 
@@ -92,6 +92,7 @@ function QuestionsEditor() {
                   <Link
                     to={`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor/${question._id}`}
                     className="btn btn-secondary me-2"
+                    onClick={(e) => dispatch(setQuestion(question))}
                   >
                     Edit
                   </Link>

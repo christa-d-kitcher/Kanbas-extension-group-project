@@ -39,10 +39,10 @@ function FillInTheBlank () {
       <p> Enter your question, then define all possible answers for the blank. </p>
       <p> Students will see the question followed by a small text box to type their answers. </p>
       <h4> Question: </h4>
-      <textarea rows = {3} className = "form-control" id = "m_question" onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
+      <textarea rows = {3} className = "form-control" id = "m_question" value = {question.description} onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
       <h4> Answers: </h4>
 
-      {question.choices.map((choice : any, index: any) => {
+      {question.correct.map((choice : any, index: any) => {
         return (
           <>
             <br />
@@ -53,7 +53,7 @@ function FillInTheBlank () {
               </div>
 
               <div className = "col-7">
-                <input type = "text" className = "form-control w-25" id = {index.toString()} />
+                <input type = "text" className = "form-control w-25" id = {index.toString()} value = {choice} />
               </div>
 
               <div className = "col-2 ms-5">

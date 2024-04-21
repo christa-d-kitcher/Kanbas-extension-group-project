@@ -45,7 +45,7 @@ function MultipleChoice () {
     <div className = "flex">
       <p> Enter your question and multiple answers, then select the one correct answer. </p>
       <h4> Question: </h4>
-      <textarea rows = {3} className = "form-control" id = "m_question" onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
+      <textarea rows = {3} className = "form-control" id = "m_question" value = {question.description} onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
       <h4> Answers: </h4>
 
       <div className = "row">
@@ -55,7 +55,7 @@ function MultipleChoice () {
         </div>
 
         <div className = "col-7">
-          <input type = "text" className = "form-control w-25" id = "m_correct" />
+          <input type = "text" className = "form-control w-25" id = "m_correct" value = {question.correct}/>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ function MultipleChoice () {
               </div>
 
               <div className = "col-7">
-                <input type = "text" className = "form-control w-25" id = {index.toString()} />
+                <input type = "text" className = "form-control w-25" id = {index.toString()} value = {choice} />
               </div>
 
               <div className = "col-2 ms-5">

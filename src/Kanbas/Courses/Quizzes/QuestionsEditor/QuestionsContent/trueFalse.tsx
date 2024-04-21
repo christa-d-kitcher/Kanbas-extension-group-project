@@ -19,7 +19,7 @@ function TrueFalse () {
 
   const handleUpdateQuestion = () => {
     const correct = [document.querySelector('input[name="truefalse"]:checked')?.id];
-    const choices = ["true", "false"];
+    const choices = ["TRUE", "FALSE"];
 
     dispatch(addQuestion({...question, correct: correct, choices: choices}));
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`);
@@ -29,7 +29,7 @@ function TrueFalse () {
     <div className = "flex">
       <p> Enter your question text, then select if True or False is the correct answer. </p>
       <h4> Question: </h4>
-      <textarea rows = {3} className = "form-control" id = "m_question" onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
+      <textarea rows = {3} className = "form-control" id = "m_question" value = {question.description} onChange =  { (e) => dispatch(setQuestion({...question, description: e.target.value}))} ></textarea>
       <h4> Answers: </h4>
 
       <div className = "row">
@@ -39,7 +39,7 @@ function TrueFalse () {
         </div>
 
         <div className = "col-7">
-          <input type = "radio" id = "true" name = "truefalse" />
+          <input type = "radio" id = "true" name = "truefalse"  checked={question.correct && question.correct[0] === "TRUE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['TRUE'] }))}/>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ function TrueFalse () {
         </div>
 
         <div className = "col-7">
-          <input type = "radio" id = "false" name = "truefalse" />
+          <input type = "radio" id = "false" name = "truefalse" checked={question.correct && question.correct[0] === "FALSE"} onChange={(e)=>dispatch(setQuestion({ ...question, correct: ['FALSE'] }))} />
         </div>
       </div>
 
