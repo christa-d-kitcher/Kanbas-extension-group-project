@@ -15,7 +15,7 @@ import { setQuestions } from './QuestionsEditor/questionsReducer'
 const QuizList = () => {
   const navigate = useNavigate()
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
-  const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
+  const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz) || {}
   const { courseId } = useParams()
 
   const dispatch = useDispatch()
@@ -41,8 +41,8 @@ const QuizList = () => {
     dispatch(setQuizzes(quizzesData))
   }
 
-  const handleAddQuiz = () => {
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${new Date().getTime().toString()}/DetailEditor`)
+  const handleAddQuiz = async() => {
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quiz._id}/DetailEditor`)
   }
 
   const handleQuizClick = (quizId: string) => {

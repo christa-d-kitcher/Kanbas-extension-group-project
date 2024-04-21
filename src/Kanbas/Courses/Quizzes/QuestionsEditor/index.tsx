@@ -64,7 +64,7 @@ function QuestionsEditor() {
   }
 
   return (
-    <div className='my-5'>
+    <div>
       {questionList.length > 0 && (
         <table className="table table-striped">
           <thead>
@@ -99,21 +99,6 @@ function QuestionsEditor() {
                     Delete
                   </button>
                 </td>
-                {/* <div>
-                  <div className="row">
-                    <div className="col">
-                      <p>{question.title}</p>
-                    </div>
-                    <div className="col">
-                      <p>{question.description}</p>
-                    </div>
-                    <div className="col">
-                      <p>{question.points}</p>
-                    </div>
-                    {question.choices?.map((choice: any) => <div className="col">{choice}</div>)}
-                    {question.correct?.map((choice: any) => <div className="col">{choice}</div>)}
-                  </div>
-                </div> */}
               </tr>
             ))}
           </tbody>
