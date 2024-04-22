@@ -12,20 +12,19 @@ function QuestionsEditor() {
   const dispatch = useDispatch()
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
-  const questionList = Object.values(
-    useSelector((state: KanbasState) => state.questionsReducer.questions)
-  )
+  const questionList = useSelector((state: KanbasState) => state.questionsReducer.questions)
   const question = useSelector((state: KanbasState) => state.questionsReducer.question)
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const questionsData = await client.getQuestionsByQuizId(quizId || '').then((data) => {
-        dispatch(setQuestions(data))})
-      dispatch(setCurrentQuiz({ ...quiz, questions: questionsData }))
-      }
-      //dispatch(setQuestions(questionsData))
-    fetchQuestions()
-  }, [dispatch, question, questionList.length, questionList])
+      await client.getQuestionsByQuizId(quizId || '').then((data) => {
+        if (data) {
+          dispatch(setQuestions(data))
+          dispatch(setCurrentQuiz({ ...quiz, questions: data }))
+        }})
+      };
+      fetchQuestions()
+  }, [])
 
   const questionType = (type: any) => {
     switch (type) {

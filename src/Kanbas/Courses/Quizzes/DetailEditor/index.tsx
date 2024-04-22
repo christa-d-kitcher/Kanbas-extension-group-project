@@ -20,7 +20,6 @@ export default function QuizEditor() {
   const [title, setTitle] = useState('')
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
-  // console.log('course', courseId)
   const questionList = Object.values(
     useSelector((state: KanbasState) => state.questionsReducer.questions)
   )
@@ -30,7 +29,6 @@ export default function QuizEditor() {
   }
 
   const handleSave = async () => {
-    dispatch(setQuestions(questionList))
     dispatch(
       setCurrentQuiz({
         ...quiz,
@@ -38,10 +36,18 @@ export default function QuizEditor() {
         assignmentGroup: 'Quizzes',
         title: quiz.title || 'New Quiz',
         type: 'Graded Quiz',
+        question: questionList,
       })
     )
     if (quizId && quizId !== 'new') {
-      await client.updateQuiz(quiz)
+      await client.updateQuiz({
+                                      ...quiz,
+                                      courseId: courseId,
+                                      assignmentGroup: 'Quizzes',
+                                      title: quiz.title || 'New Quiz',
+                                      type: 'Graded Quiz',
+                                      question: questionList,
+                                    })
       navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     } else {
       await client.saveQuiz({
@@ -50,6 +56,7 @@ export default function QuizEditor() {
         assignmentGroup: 'Quizzes',
         title: quiz.title || 'New Quiz',
         type: 'Graded Quiz',
+        question: questionList,
       })
       navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     }
@@ -59,8 +66,7 @@ export default function QuizEditor() {
   }
 
   const handleSaveAndPublish = async () => {
-    dispatch(setQuestions(questionList))
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList}))
 
     if (quizId && quizId !== 'new') {
       await client.updateQuiz(quiz)
@@ -75,17 +81,17 @@ export default function QuizEditor() {
     dispatch(setQuizzes(quizzesData))
   }
 
-  useEffect(() => {
-    if (!quizId || quizId === 'new') {
-      dispatch(resetQuiz())
-    } else {
-      const currentQuiz = quizzes.find(q => q._id === quizId)
-      if (currentQuiz) {
-        dispatch(setCurrentQuiz(currentQuiz))
-        dispatch(setQuestions(currentQuiz.questions))
-      }
-    }
-  }, [dispatch, quizId, quizzes])
+//   useEffect(() => {
+//     if (!quizId || quizId === 'new') {
+//       dispatch(resetQuiz())
+//     } else {
+//       const currentQuiz = quizzes.find(q => q._id === quizId)
+//       if (currentQuiz) {
+//         dispatch(setCurrentQuiz(currentQuiz))
+//         //dispatch(setQuestions(currentQuiz.questions))
+//       }
+//     }
+//   }, [dispatch, quizId, quizzes])
 
   return (
     <div className="container my-3 mb-5">
