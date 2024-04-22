@@ -9,7 +9,7 @@ import moment from 'moment'
 import * as client from './client'
 import { KanbasState } from '../../store'
 import { deleteQuiz as deleteQuizAction } from './quizReducer';
-import { setQuizzes, setCurrentQuiz, addQuiz, updateQuiz, deleteQuiz } from './quizReducer'
+import { setQuizzes, setCurrentQuiz, resetQuiz} from './quizReducer'
 import { setQuestions } from './QuestionsEditor/questionsReducer'
 
 const QuizList = () => {
@@ -17,6 +17,7 @@ const QuizList = () => {
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz) || {}
   const { courseId } = useParams()
+  // console.log('courseId', courseId)
 
   const dispatch = useDispatch()
 
@@ -41,8 +42,9 @@ const QuizList = () => {
     dispatch(setQuizzes(quizzesData))
   }
 
-  const handleAddQuiz = async() => {
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quiz._id}/DetailEditor`)
+  const handleAddQuiz = () => {
+    dispatch(resetQuiz())
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/new/DetailEditor`)
   }
 
   const handleQuizClick = (quizId: string) => {

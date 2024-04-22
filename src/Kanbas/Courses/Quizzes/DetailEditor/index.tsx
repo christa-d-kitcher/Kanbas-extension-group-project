@@ -17,46 +17,75 @@ export default function QuizEditor() {
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('Details')
   const { courseId, quizId } = useParams()
+  const [title, setTitle] = useState('')
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
-
+  // console.log('course', courseId)
   const questionList = Object.values(
     useSelector((state: KanbasState) => state.questionsReducer.questions)
   )
-
-  const handleSave = async () => {
-    dispatch(setQuestions(questionList))
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
-    const index = quizzes.findIndex((q) => q._id === quizId)
-    if (index !== -1) {
-      await client.updateQuiz(quiz)
-    } else {
-      await client.saveQuiz(quiz)
-    }
-    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
-    dispatch(setQuizzes(quizzesData))
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
-  }
 
   const handleEditorChange = (content: any, editor: any) => {
     dispatch(setCurrentQuiz({ ...quiz, description: content }))
   }
 
+  const handleSave = async () => {
+    dispatch(setQuestions(questionList))
+    dispatch(
+      setCurrentQuiz({
+        ...quiz,
+        courseId: courseId,
+        assignmentGroup: 'Quizzes',
+        title: quiz.title || 'New Quiz',
+        type: 'Graded Quiz',
+      })
+    )
+    if (quizId && quizId !== 'new') {
+      await client.updateQuiz(quiz)
+      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
+    } else {
+      await client.saveQuiz({
+        ...quiz,
+        courseId: courseId,
+        assignmentGroup: 'Quizzes',
+        title: quiz.title || 'New Quiz',
+        type: 'Graded Quiz',
+      })
+      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
+    }
+
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+    dispatch(setQuizzes(quizzesData))
+  }
+
   const handleSaveAndPublish = async () => {
     dispatch(setQuestions(questionList))
     dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
-    const index = quizzes.findIndex((q) => q._id === quizId)
-    if (index !== -1) {
+
+    if (quizId && quizId !== 'new') {
       await client.updateQuiz(quiz)
-      await client.publishQuiz(quizId || '')
+      await client.publishQuiz(quizId)
     } else {
-      await client.saveQuiz(quiz)
-      await client.publishQuiz(quizId || '')
+      const newQuiz = await client.saveQuiz(quiz)
+      await client.publishQuiz(newQuiz._id)
+      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     }
+
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
+
+  useEffect(() => {
+    if (!quizId || quizId === 'new') {
+      dispatch(resetQuiz())
+    } else {
+      const currentQuiz = quizzes.find(q => q._id === quizId)
+      if (currentQuiz) {
+        dispatch(setCurrentQuiz(currentQuiz))
+        dispatch(setQuestions(currentQuiz.questions))
+      }
+    }
+  }, [dispatch, quizId, quizzes])
 
   return (
     <div className="container my-3 mb-5">
@@ -97,7 +126,9 @@ export default function QuizEditor() {
             type="text"
             className="form-control"
             value={quiz.title}
-            onChange={e => dispatch(setCurrentQuiz({ ...quiz, title: e.target.value }))}
+            onChange={e => {
+              dispatch(setCurrentQuiz({ ...quiz, title: e.target.value }))
+            }}
           />
           <label>Description:</label>
           <Editor
@@ -127,7 +158,9 @@ export default function QuizEditor() {
               type="number"
               className="form-control"
               value={quiz.points}
-              onChange={e => dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value)}))}
+              onChange={e =>
+                dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value) }))
+              }
             />
             <label>Assign to:</label>
             <input
@@ -165,7 +198,11 @@ export default function QuizEditor() {
               <label htmlFor="notify">Notify users this quiz has changed</label>
             </div>
             <div className="float-end">
-              <Link to={`/Kanbas/Courses/${courseId}/Quizzes`} className="btn btn-light" onClick={ (e) => dispatch(resetQuiz())}>
+              <Link
+                to={`/Kanbas/Courses/${courseId}/Quizzes`}
+                className="btn btn-light"
+                onClick={e => dispatch(resetQuiz())}
+              >
                 Cancel
               </Link>
               <button onClick={handleSaveAndPublish} className="btn btn-light mx-3">
