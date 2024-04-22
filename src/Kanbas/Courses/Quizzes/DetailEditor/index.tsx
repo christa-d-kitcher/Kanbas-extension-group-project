@@ -41,13 +41,13 @@ export default function QuizEditor() {
     )
     if (quizId && quizId !== 'new') {
       await client.updateQuiz({
-                                      ...quiz,
-                                      courseId: courseId,
-                                      assignmentGroup: 'Quizzes',
-                                      title: quiz.title || 'New Quiz',
-                                      type: 'Graded Quiz',
-                                      question: questionList,
-                                    })
+        ...quiz,
+        courseId: courseId,
+        assignmentGroup: 'Quizzes',
+        title: quiz.title || 'New Quiz',
+        type: 'Graded Quiz',
+        question: questionList,
+      })
       navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     } else {
       await client.saveQuiz({
@@ -66,7 +66,7 @@ export default function QuizEditor() {
   }
 
   const handleSaveAndPublish = async () => {
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList}))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
 
     if (quizId && quizId !== 'new') {
       await client.updateQuiz(quiz)
@@ -81,17 +81,17 @@ export default function QuizEditor() {
     dispatch(setQuizzes(quizzesData))
   }
 
-//   useEffect(() => {
-//     if (!quizId || quizId === 'new') {
-//       dispatch(resetQuiz())
-//     } else {
-//       const currentQuiz = quizzes.find(q => q._id === quizId)
-//       if (currentQuiz) {
-//         dispatch(setCurrentQuiz(currentQuiz))
-//         //dispatch(setQuestions(currentQuiz.questions))
-//       }
-//     }
-//   }, [dispatch, quizId, quizzes])
+  //   useEffect(() => {
+  //     if (!quizId || quizId === 'new') {
+  //       dispatch(resetQuiz())
+  //     } else {
+  //       const currentQuiz = quizzes.find(q => q._id === quizId)
+  //       if (currentQuiz) {
+  //         dispatch(setCurrentQuiz(currentQuiz))
+  //         //dispatch(setQuestions(currentQuiz.questions))
+  //       }
+  //     }
+  //   }, [dispatch, quizId, quizzes])
 
   return (
     <div className="container my-3 mb-5">

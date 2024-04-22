@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { MdOutlinePublishedWithChanges } from 'react-icons/md'
 import { FaBan, FaPlus, FaEllipsisV } from 'react-icons/fa'
@@ -8,8 +8,8 @@ import { IoRocketOutline } from 'react-icons/io5'
 import moment from 'moment'
 import * as client from './client'
 import { KanbasState } from '../../store'
-import { deleteQuiz as deleteQuizAction } from './quizReducer';
-import { setQuizzes, setCurrentQuiz, resetQuiz} from './quizReducer'
+import { deleteQuiz as deleteQuizAction } from './quizReducer'
+import { setQuizzes, setCurrentQuiz, resetQuiz } from './quizReducer'
 import { setQuestions } from './QuestionsEditor/questionsReducer'
 
 const QuizList = () => {
@@ -23,12 +23,11 @@ const QuizList = () => {
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      const quizzesData = await client.getQuizzesByCourseId(courseId || '');
-      dispatch(setQuizzes(quizzesData));
-    };
-    fetchQuizzes();
-  }, [dispatch, courseId, quizzes.length]);  // Add quizzes.length as a dependency
-  
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+      dispatch(setQuizzes(quizzesData))
+    }
+    fetchQuizzes()
+  }, [dispatch, courseId, quizzes.length]) // Add quizzes.length as a dependency
 
   const handlePublish = async (quizId: string) => {
     await client.publishQuiz(quizId)
@@ -76,15 +75,15 @@ const QuizList = () => {
     }
   }
 
-const deleteQuiz = async (quizId: string) => {
+  const deleteQuiz = async (quizId: string) => {
     // Confirmation dialog
     if (window.confirm('Are you sure you want to delete this quiz?')) {
-        await client.deleteQuiz(quizId);
-        dispatch(deleteQuizAction(quizId));  // Dispatch action to update the state
-        const quizzesData = await client.getQuizzesByCourseId(courseId || '');
-        dispatch(setQuizzes(quizzesData)); // Optionally refetch and reset the list
+      await client.deleteQuiz(quizId)
+      dispatch(deleteQuizAction(quizId)) // Dispatch action to update the state
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+      dispatch(setQuizzes(quizzesData)) // Optionally refetch and reset the list
     }
-}
+  }
 
   return (
     <div>
@@ -143,7 +142,7 @@ const deleteQuiz = async (quizId: string) => {
                             onClick={() => handleQuizClick(quiz._id)}
                             style={{ fontSize: '23px' }}
                           >
-                            {quiz.title}
+                            <Link to={`Quizzes/${quiz._id}/QuizDetail`}>{quiz.title}</Link>
                           </span>
                         </div>
                         <div className="ms-5 ps-4 " style={{ color: '#666' }}>

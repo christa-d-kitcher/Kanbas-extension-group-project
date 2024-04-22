@@ -15,7 +15,7 @@ function Question () {
   const question = useSelector((state: KanbasState) => state.questionsReducer.question);
 
   return (
-    <div className = "container border rounded">
+    <div className = "container border rounded my-5">
         <div className = "row">
          <div className = "col-3">
           <input className = "form-control ms-2 mt-2" placeholder = {question?.title} onChange = {(e) => dispatch(setQuestion({...question, title: e.target.value}))}/>
