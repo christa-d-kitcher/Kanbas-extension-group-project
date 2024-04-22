@@ -1,242 +1,232 @@
-import React, { useState } from 'react';
-import './index.css';
-import { Editor } from '@tinymce/tinymce-react';// use the advanced editor called TinyMCE for the Description (WYSIWYG),
-import * as client from "./client";
-import { useNavigate, useParams, Link } from "react-router-dom";
-//need to install TinyMCE React integration:npm install @tinymce/tinymce-react
+import React, { useEffect } from 'react'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { MdOutlinePublishedWithChanges } from 'react-icons/md'
+import { FaBan, FaPlus, FaEllipsisV } from 'react-icons/fa'
+import { BsThreeDotsVertical } from 'react-icons/bs'
+import { IoRocketOutline } from 'react-icons/io5'
+import moment from 'moment'
+import * as client from './client'
+import { KanbasState } from '../../store'
+import { deleteQuiz as deleteQuizAction } from './quizReducer'
+import { setQuizzes, setCurrentQuiz, resetQuiz } from './quizReducer'
+import { setQuestions } from './QuestionsEditor/questionsReducer'
 
+const QuizList = () => {
+  const navigate = useNavigate()
+  const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
+  const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz) || {}
+  const { courseId } = useParams()
+  // console.log('courseId', courseId)
 
-const Quizzes = () => {
-  const navigate = useNavigate();
-  const [quiz, setQuiz] = useState({
-    timeLimit: 20,
-    type: "Graded Quiz",
-    assignmentGroup: "Quizzes",
-    isPublished: false,
-    shuffleAnswers: true,
-    multipleAttempts: false,
-    oneQuestionAtATime: true,
-    webcamRequired: false,
-    lockQuestionsAfterAnswering: false,
-  } as any)
-  const [activeTab, setActiveTab] = useState('Details');
-  const { cid } = useParams();
+  const dispatch = useDispatch()
 
-  const handleEditorChange = (content: string) => {
-    setQuiz({...quiz, description: content})
-  };
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '');
+      dispatch(setQuizzes(quizzesData));
+    };
+    fetchQuizzes();
+  }, [dispatch, courseId, quizzes.length, quizzes]);  // Add quizzes.length as a dependency
 
-  const handleSave = async() => { 
-    await client.saveQuiz(quiz);
-  };
-  const handleSaveAndPublish = async() => { 
-      const resp = await client.saveQuiz(quiz);
-      await client.publishQuiz(resp._id);
-      navigate(`/Kanbas/Courses/${cid}/quizzes`);
-  };
-  const handleCancel = () => { 
-      setQuiz({
-        timeLimit: 20,
-        type: "Graded Quiz",
-        assignmentGroup: "Quizzes",
-        isPublished: false,
-        shuffleAnswers: true,
-        multipleAttempts: false,
-        oneQuestionAtATime: true,
-        webcamRequired: false,
-        lockQuestionsAfterAnswering: false,
-      })
-      navigate(`/Kanbas/Courses/${cid}/quizzes`);
-  };
+  const handlePublish = async (quizId: string) => {
+    await client.publishQuiz(quizId)
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+    dispatch(setQuizzes(quizzesData))
+  }
+
+  const handleUnpublish = async (quizId: string) => {
+    await client.unpublishQuiz(quizId)
+    const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+    dispatch(setQuizzes(quizzesData))
+  }
+
+  const handleAddQuiz = () => {
+    dispatch(resetQuiz())
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/new/DetailEditor`)
+  }
+
+  const handleQuizClick = (quizId: string) => {
+    const currentQuiz = quizzes.find(quiz => quiz._id === quizId)
+    dispatch(setCurrentQuiz(currentQuiz))
+    dispatch(setQuestions(currentQuiz.questions))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuizDetail`)
+  }
+
+  const handleEdit = (quizId: string) => {
+    const currentQuiz = quizzes.find(quiz => quiz._id === quizId)
+    dispatch(setCurrentQuiz(currentQuiz))
+    dispatch(setQuestions(currentQuiz.questions))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`)
+  }
+
+  const renderAvailability = (quiz: any) => {
+    const currentDate = new Date()
+    const availableDate = new Date(quiz.availableDate)
+    const untilDate = new Date(quiz.untilDate)
+    const dueDate = new Date(quiz.dueDate)
+
+    if (currentDate > untilDate) {
+      return 'Closed'
+    } else if (currentDate >= availableDate && currentDate <= untilDate) {
+      return 'Available'
+    } else {
+      return `Not available until ${availableDate.toDateString()}`
+    }
+  }
+
+  const deleteQuiz = async (quizId: string) => {
+    // Confirmation dialog
+    if (window.confirm('Are you sure you want to delete this quiz?')) {
+      await client.deleteQuiz(quizId)
+      dispatch(deleteQuizAction(quizId)) // Dispatch action to update the state
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '')
+      dispatch(setQuizzes(quizzesData)) // Optionally refetch and reset the list
+    }
+  }
 
   return (
-    <div className="quiz-container">
-      <div className="tabs">
-        <button className={`tab ${activeTab === 'Details' ? 'active' : ''}`} onClick={() => setActiveTab('Details')}>
-          Details
-        </button>
-        <button className={`tab ${activeTab === 'Questions' ? 'active' : ''}`} onClick={() => setActiveTab('Questions')}>
-          Questions
-        </button>
-      </div>
-
-      {activeTab === 'Details' && (
-        <div className="details-container">
-          <input
-            type="text"
-            className="quiz-title-input"
-            value={quiz.title}
-            onChange={(e) => setQuiz({...quiz, title: e.target.value})}
-            placeholder="Unnamed Quiz"
-          />
-
-
-          {/* My API key for the TinyMCE installation included in the code:rbhkgq7fs4tvui8zgsogy4uf9kwqbr2rlc47ipr5b9yxtnlz */}
-          <div className="quiz-container">
-            <div className="wysiwyg-editor-container">
-              <label htmlFor="quizDescription">Quiz Instructions:</label>
-              <Editor
-                apiKey="rbhkgq7fs4tvui8zgsogy4uf9kwqbr2rlc47ipr5b9yxtnlz"
-                value={quiz.description}
-                onEditorChange={handleEditorChange}
-                init={{
-                  height: 500,
-                  menubar: 'file edit view insert format tools table help',
-                  plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount',
-                    'undo redo'
-                  ],
-                  toolbar: 'undo redo | formatselect | ' +
-                    'bold italic backcolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                }}
-              />
-            </div>
-          </div>
-
-
-          <label htmlFor="quizType">Quiz Type</label>
-          <select id="quizType" value={quiz.quizType} onChange={(e) => setQuiz({...quiz, quizType: e.target.value})}>
-            <option value="Graded Quiz">Graded Quiz</option>
-            <option value="Practice Quiz">Practice Quiz</option>
-            <option value="Graded Survey">Graded Survey</option>
-            <option value="Ungraded Survey">Ungraded Survey</option>
-          </select>
-
-          <label htmlFor="assignmentGroup">Assignment Group</label>
-          <select id="assignmentGroup" value={quiz.assignmentGroup} onChange={(e) => setQuiz({...quiz, assignmentGroup: e.target.value})}>
-            <option value="Quizzes">Quizzes</option>
-            <option value="Exams">Exams</option>
-            <option value="Assignment">Assignment</option>
-            <option value="Project">Project</option>
-          </select>
-
-          <div className="quiz-options">
-            <label>
-              <input type="checkbox" checked={quiz.shuffleAnswers} onChange={(e) => setQuiz({...quiz, shuffleAnswerse: e.target.checked})} />
-              Shuffle Answers
-            </label>
-
-            <div className="time-limit-option">
-              <label htmlFor="timeLimit">Time Limit</label>
-              <input
-                type="number"
-                id="timeLimit"
-                className="time-limit-input"
-                value={quiz.timeLimit}
-                onChange={(e) => setQuiz({...quiz, timeLimit: e.target.value})}
-                min="1"
-              />
-              <span className="time-label">minutes</span>
-            </div>
-
-            <label>
-              <input type="checkbox" checked={quiz.allowMultipleAttempts} onChange={(e) => setQuiz({...quiz, allowMultipleAttempts: e.target.checked})} />
-              Allow Multiple Attempts
-            </label>
-
-            <div className="field">
-              <label htmlFor="quizPoints">Points:</label>
-              <input
-                type="number"
-                id="quizPoints"
-                className="quiz-points-input"
-                value={quiz.points}
-                onChange={(e) => setQuiz({...quiz, points: Number(e.target.value)})}
-                min="0"
-              />
-            </div>
-
-            <div className="field">
-              <label>
-                <input type="checkbox" checked={quiz.showCorrectAnswers} onChange={(e) => setQuiz({...quiz, showCorrectAnswers: e.target.checked})} />
-                Show Correct Answers
-              </label>
-            </div>
-
-
-            <div className="field">
-              <label>Access Code:</label>
-              <input type="text" value={quiz.accessCode} onChange={(e) => setQuiz({...quiz, accessCode: e.target.value})} />
-            </div>
-            <div className="field">
-              <label>
-                <input type="checkbox" checked={quiz.oneQuestionAtATime} onChange={(e) => setQuiz({...quiz, oneQuestionAtATime: e.target.checked})} />
-                One Question at a Time
-              </label>
-            </div>
-            <div className="field">
-              <label>
-                <input type="checkbox" checked={quiz.webcamRequired} onChange={(e) => setQuiz({...quiz, webcamRequired: e.target.checked})} />
-                Webcam Required
-              </label>
-            </div>
-            <div className="field">
-              <label>
-                <input type="checkbox" checked={quiz.lockQuestionsAfterAnswering} onChange={(e) => setQuiz({...quiz, lockQuestionsAfterAnswering: e.target.checked})} />
-                Lock Questions After Answering
-              </label>
-            </div>
-          </div>
-
-          <div className="assign-section">
-            <div className="assign-to">
-              <label htmlFor="assignTo">Assign to</label>
-              <input
-                type="text"
-                id="assignTo"
-                value={quiz.assignTo}
-                onChange={(e) => setQuiz({...quiz, assignTo: e.target.value})}
-              />
-            </div>
-
-            <div className="date-field">
-              <label htmlFor="dueDate">Due</label>
-              <input
-                type="datetime-local"
-                id="dueDate"
-                value={quiz.dueDate}
-                onChange={(e) => setQuiz({...quiz, dueDate: e.target.value})}
-              />
-            </div>
-
-            <div className="availability">
-              <div className="date-field">
-                <label htmlFor="availableFrom">Available from</label>
+    <div>
+      {quizzes.length === 0 ? (
+        <div>
+          <p className="my-2 display-6">Click Add Quiz Button to add a new quiz</p>
+          <button className="btn btn-primary" onClick={handleAddQuiz}>
+            Add Quiz
+          </button>
+        </div>
+      ) : (
+        <div>
+          <div className="row main-header pt-4 my-3">
+            {/* Search Bar */}
+            <div className="col">
+              <form>
                 <input
-                  type="datetime-local"
-                  id="availableFrom"
-                  value={quiz.availableFrom}
-                  onChange={(e) => setQuiz({...quiz, availableFrom: e.target.value})}
+                  type="text"
+                  className="form-control ms-1"
+                  style={{ width: '250px' }}
+                  id="search-assignment"
+                  placeholder="Search for Quiz"
                 />
-              </div>
-
-              <div className="date-field">
-                <label htmlFor="untilDate">Until</label>
-                <input
-                  type="datetime-local"
-                  id="untilDate"
-                  value={quiz.untilDate}
-                  onChange={(e) => setQuiz({...quiz, untilDate: e.target.value})}
-                />
-              </div>
+              </form>
+            </div>
+            {/* Buttons */}
+            <div className="col-auto">
+              <button
+                className="btn btn-danger btn-outline-dark mx-2 text-white"
+                onClick={handleAddQuiz}
+              >
+                <FaPlus /> Quiz
+              </button>
+              <button className="btn btn-light btn-outline-dark me-1">
+                <BsThreeDotsVertical />
+              </button>
             </div>
           </div>
-
-          <div className="action-buttons">
-            <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
-            <button className="publish-btn" onClick={handleSaveAndPublish}>Save & Publish</button>
-            <button className="save-btn" onClick={handleSave}>Save</button>
-          </div>
+          <ul className="list-group wd-modules">
+            <li className="list-group-item">
+              <div className="py-3">
+                <FaEllipsisV className="me-2 mb-2" />{' '}
+                <h3 className="d-inline mb-0">Assignment Quizzes</h3>
+              </div>
+              <ul className="list-group">
+                {quizzes.map(quiz => (
+                  <li key={quiz._id} className="list-group-item py-4 border-1 border-start">
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <div>
+                          <IoRocketOutline
+                            className="mx-4 text-success"
+                            style={{ fontSize: '25px' }}
+                          />
+                          <span
+                            onClick={() => handleQuizClick(quiz._id)}
+                            style={{ fontSize: '23px' }}
+                          >
+                            <Link to={`Quizzes/${quiz._id}/QuizDetail`}>{quiz.title}</Link>
+                          </span>
+                        </div>
+                        <div className="ms-5 ps-4 " style={{ color: '#666' }}>
+                          <span>{renderAvailability(quiz)} | </span>
+                          <span>Due Date: {moment(quiz.dueDate).format('MMM DD h:mm a')} | </span>
+                          <span>Points: {quiz.points} | </span>
+                          <span>Number of Questions: {quiz.questions.length}</span>
+                        </div>
+                      </div>
+                      <div className="d-flex">
+                        {quiz.isPublished ? (
+                          <span
+                            role="img"
+                            aria-label="Published"
+                            onClick={() => handleUnpublish(quiz._id)}
+                            style={{ fontSize: '25px' }}
+                          >
+                            <MdOutlinePublishedWithChanges className="text-success" />
+                          </span>
+                        ) : (
+                          <span
+                            role="img"
+                            aria-label="Unpublished"
+                            onClick={() => handlePublish(quiz._id)}
+                            style={{ fontSize: '25px' }}
+                          >
+                            <FaBan className="text-danger" />
+                          </span>
+                        )}
+                        <div>
+                          {quiz.isPublished ? (
+                            <button
+                              style={{
+                                backgroundColor: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                padding: '5px 10px',
+                                cursor: 'pointer',
+                              }}
+                              className="btn btn-success ms-2"
+                              onClick={() => handleUnpublish(quiz._id)}
+                            >
+                              Published
+                            </button>
+                          ) : (
+                            <button
+                              style={{
+                                backgroundColor: '#757575',
+                                color: 'white',
+                                border: 'none',
+                                padding: '5px 10px',
+                                cursor: 'pointer',
+                              }}
+                              className="btn btn-danger ms-2"
+                              onClick={() => handlePublish(quiz._id)}
+                            >
+                              Unpublished
+                            </button>
+                          )}
+                          {/* context menu */}
+                          <button
+                            onClick={() => handleEdit(quiz._id)}
+                            className="btn btn-primary mx-2"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteQuiz(quiz._id)}
+                            className="btn btn-danger me-2"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          </ul>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Quizzes;
-
+export default QuizList
