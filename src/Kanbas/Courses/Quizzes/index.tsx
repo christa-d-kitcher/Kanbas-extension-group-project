@@ -23,11 +23,11 @@ const QuizList = () => {
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      const quizzesData = await client.getQuizzesByCourseId(courseId || '')
-      dispatch(setQuizzes(quizzesData))
-    }
-    fetchQuizzes()
-  }, [dispatch, courseId, quizzes.length]) // Add quizzes.length as a dependency
+      const quizzesData = await client.getQuizzesByCourseId(courseId || '');
+      dispatch(setQuizzes(quizzesData));
+    };
+    fetchQuizzes();
+  }, [dispatch, courseId, quizzes.length, quizzes]);  // Add quizzes.length as a dependency
 
   const handlePublish = async (quizId: string) => {
     await client.publishQuiz(quizId)

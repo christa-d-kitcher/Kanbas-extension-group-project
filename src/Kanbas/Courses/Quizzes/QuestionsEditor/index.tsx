@@ -49,8 +49,16 @@ function QuestionsEditor() {
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSave = async () => {
-    dispatch(setQuestions(questionList))
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
+    const updatedQuiz = {
+      ...quiz,
+      courseId: courseId,
+      assignmentGroup: 'Quizzes',
+      title: quiz.title || 'New Quiz',
+      type: 'Graded Quiz',
+      questions: questionList,
+    }
+
+    dispatch(setCurrentQuiz(updatedQuiz))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
@@ -62,8 +70,7 @@ function QuestionsEditor() {
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSaveAndPublish = async () => {
-    dispatch(setQuestions(questionList))
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList }))
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList,  courseId: courseId }))
     const index = quizzes.findIndex((q) => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
