@@ -27,7 +27,7 @@ const QuizList = () => {
       dispatch(setQuizzes(quizzesData));
     };
     fetchQuizzes();
-  }, [dispatch, courseId, quizzes.length]);  // Add quizzes.length as a dependency
+  }, [dispatch, courseId, quizzes.length, quizzes]);  // Add quizzes.length as a dependency
   
 
   const handlePublish = async (quizId: string) => {

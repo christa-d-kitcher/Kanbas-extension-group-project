@@ -29,25 +29,19 @@ export default function QuizEditor() {
   }
 
   const handleSave = async () => {
-    dispatch(
-      setCurrentQuiz({
-        ...quiz,
-        courseId: courseId,
-        assignmentGroup: 'Quizzes',
-        title: quiz.title || 'New Quiz',
-        type: 'Graded Quiz',
-        question: questionList,
-      })
-    )
+    const updatedQuiz = {
+      ...quiz,
+      courseId: courseId,
+      assignmentGroup: 'Quizzes',
+      title: quiz.title || 'New Quiz',
+      type: 'Graded Quiz',
+      questions: questionList,
+    }
+
+    dispatch(setCurrentQuiz(updatedQuiz))
+
     if (quizId && quizId !== 'new') {
-      await client.updateQuiz({
-                                      ...quiz,
-                                      courseId: courseId,
-                                      assignmentGroup: 'Quizzes',
-                                      title: quiz.title || 'New Quiz',
-                                      type: 'Graded Quiz',
-                                      question: questionList,
-                                    })
+      await client.updateQuiz(quiz)
       navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     } else {
       await client.saveQuiz({
@@ -56,7 +50,7 @@ export default function QuizEditor() {
         assignmentGroup: 'Quizzes',
         title: quiz.title || 'New Quiz',
         type: 'Graded Quiz',
-        question: questionList,
+        questions: questionList,
       })
       navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     }
