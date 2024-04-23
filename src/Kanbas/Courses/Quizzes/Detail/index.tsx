@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { BsThreeDotsVertical } from 'react-icons/bs'
-import { MdOutlinePublishedWithChanges } from 'react-icons/md'
+import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
 import moment from 'moment'
 import { CiEdit } from 'react-icons/ci'
 import { saveQuiz, updateQuiz, publishQuiz, unpublishQuiz } from '../client'
@@ -55,9 +55,18 @@ const QuizDetails = () => {
         >
           Review
         </Link>
-        <button className="float-end btn btn-success me-2" onClick={handlePublish}>
-          <MdOutlinePublishedWithChanges className="text-white" /> Published
-        </button>
+        {
+          quiz.isPublished ? (
+            <button className="float-end btn btn-success me-2" onClick={handlePublish}>
+              <MdOutlinePublishedWithChanges className="text-white" /> Published
+            </button>
+          ) : (
+            <button className="float-end btn btn-danger me-2" onClick={handlePublish}>
+              <MdOutlineUnpublished className="text-white" />
+              Unpublished
+            </button>
+          )
+        }
       </div>
       <hr />
       <div>
@@ -186,7 +195,7 @@ const QuizDetails = () => {
           </div>
         </form>
       </div>
-      <div className='my-5'>
+      <div className="my-5">
         <table className="table border-top-1">
           <thead>
             <tr>

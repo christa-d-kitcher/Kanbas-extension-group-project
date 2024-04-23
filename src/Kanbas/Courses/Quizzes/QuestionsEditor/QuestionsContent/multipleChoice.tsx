@@ -66,16 +66,10 @@ function MultipleChoice() {
 
       const newQuestion = { ...question, choices: choices, correct: correct }
       // console.log('newQuestion', newQuestion)
-      dispatch(setQuestion(newQuestion))
+      // dispatch(setQuestion(newQuestion))
       dispatch(addQuestion(newQuestion))
     }
-    // console.log('question', question)
-    // const updatedQuiz = { ...quiz, questions: question }
-    // console.log('quiz', updatedQuiz)
-    // await client.updateQuiz(updatedQuiz)
-    // dispatch(updateQuiz(updatedQuiz))
-    // console.log('quiz', updateQuiz)
-    dispatch(resetQuestion())
+    // dispatch(resetQuestion())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`)
   }
 

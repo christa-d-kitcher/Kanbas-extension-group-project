@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
-import { setQuestions, setQuestion, resetQuestion,deleteQuestion } from './questionsReducer'
+import { setQuestions, setQuestion, resetQuestion, deleteQuestion } from './questionsReducer'
 import { setCurrentQuiz, setQuizzes, resetQuiz, updateQuiz, addQuiz } from '../quizReducer'
 import * as client from '../client'
 
@@ -21,10 +21,15 @@ function QuestionsEditor() {
         if (data) {
           dispatch(setQuestions(data))
           dispatch(setCurrentQuiz({ ...quiz, questions: data }))
+        } else {
+          dispatch(setQuestions([]))
+          dispatch(setCurrentQuiz({ ...quiz, questions: [] }))
         }
       })
     }
     fetchQuestions()
+    // console.log('questionList', questionList)
+    // console.log('question', question)
   }, [questionList.length, quizId])
 
   const questionType = (type: any) => {
@@ -40,26 +45,41 @@ function QuestionsEditor() {
     }
   }
 
-  const handelDeleteQuestion = async (questionId:any) => {
-    dispatch(deleteQuestion(questionId))
-    await client.deleteQuestion(quizId, questionId)
-    const questionsData = await client.getQuestionsByQuizId(quizId || '')
-    dispatch(setQuestions(questionsData))
-    dispatch(resetQuestion())
-    dispatch(resetQuiz())
+  const handelDeleteQuestion = async (questionId: any) => {
+    console.log('quiz', quiz)
+    try {
+      const newQuestionList = questionList.filter(q => q._id !== questionId)
+      console.log('newQuestionList', newQuestionList)
+      const newQuiz = { ...quiz, questions: newQuestionList }
+      // console.log('newQuiz', newQuiz);
+
+      await client.updateQuiz(newQuiz)
+      // dispatch(setQuestions(newQuestionList));
+      dispatch(setCurrentQuiz(newQuiz))
+      // console.log('Quizzes', quizzes);
+      // dispatch(setQuizzes(quizzes));
+      dispatch(deleteQuestion(questionId)) // 确保此行未被注释
+      dispatch(resetQuestion())
+      // dispatch(resetQuiz());
+      console.log('Question deleted successfully')
+    } catch (error) {
+      console.error('Failed to delete question:', error)
+    }
   }
   const handleCancel = () => {
     dispatch(resetQuiz())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSave = async () => {
-    console.log('quiz', quiz)
+    // console.log('quiz', quiz)
+    // console.log('questionList', questionList)
     const updatedQuiz = {
       ...quiz,
       courseId: courseId,
       assignmentGroup: 'Quizzes',
       title: quiz.title,
       type: 'Graded Quiz',
+      questions: questionList,
     }
     // console.log('updatedQuiz', updatedQuiz)
     dispatch(setCurrentQuiz(updatedQuiz))
@@ -106,32 +126,39 @@ function QuestionsEditor() {
             </tr>
           </thead>
           <tbody>
-            {questionList?.map((question: any) => (
-              <tr key={question._id}>
-                <td>
-                  <p>{question.title}</p>
-                </td>
-                <td>
-                  <p>{question.description}</p>
-                </td>
-                <td>
-                  <p>{questionType(question.type)}</p>
-                  {/* <p>{question.type}</p> */}
-                </td>
-                <td>
-                  <Link
-                    to={`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor/${question._id}`}
-                    className="btn btn-secondary me-2"
-                    onClick={e => dispatch(setQuestion(question))}
-                  >
-                    Edit
-                  </Link>
-                  <button onClick={()=>handelDeleteQuestion(question._id)} className="btn btn-danger">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {questionList?.map((question: any) => {
+              if (!question.title || !question.description) return null
+
+              return (
+                <tr key={question._id}>
+                  <td>
+                    <p>{question.title}</p>
+                  </td>
+                  <td>
+                    <p>{question.description}</p>
+                  </td>
+                  <td>
+                    <p>{questionType(question.type)}</p>
+                    {/* <p>{question.type}</p> */}
+                  </td>
+                  <td>
+                    <Link
+                      to={`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor/${question._id}`}
+                      className="btn btn-secondary me-2"
+                      onClick={e => dispatch(setQuestion(question))}
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handelDeleteQuestion(question._id)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       )}
