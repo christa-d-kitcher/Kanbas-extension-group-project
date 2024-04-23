@@ -89,7 +89,7 @@ function QuestionReview() {
   }
   return (
     <div className="mb-5 pb-5">
-      <h1>{currentQuiz.title}</h1>
+      <h1>{currentQuiz?.title}</h1>
       <div
         className="p-3 me-4 my-3"
         style={{ background: '#F9ECE8', color: '#CC5546', borderRadius: '10px', fontSize: '18px' }}

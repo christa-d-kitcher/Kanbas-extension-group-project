@@ -63,20 +63,15 @@ const questionSlice = createSlice({
       state.question = { id: '', type: 'MULTIPLE_CHOICE', title: 'new question', correct: [''], points: 0 }
     },
     setQuestion: (state, action) => {
-      state.question = { ...action.payload }
-      state.question.choices = []
+      // Check if choices and correct are arrays, provide default empty arrays if not
+      const choices = Array.isArray(action.payload.choices) ? action.payload.choices : [];
+      const correct = Array.isArray(action.payload.correct) ? action.payload.correct : [];
 
       state.question = {
-        ...state.question,
-        choices: [...action.payload.choices],
-      }
-
-      state.question.correct = []
-
-      state.question = {
-        ...state.question,
-        correct: [...action.payload.correct],
-      }
+        ...action.payload,
+        choices: choices,
+        correct: correct
+      };
     },
     setQuestions: (state, action) => {
       state.questions = action.payload

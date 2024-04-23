@@ -10,7 +10,7 @@ import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
 import QuestionsEditor from '../QuestionsEditor'
 import './index.css'
-import { setQuestions, setQuestion } from '../QuestionsEditor/questionsReducer'
+import { setQuestions, setQuestion,resetQuestion } from '../QuestionsEditor/questionsReducer'
 
 export default function QuizEditor() {
   const navigate = useNavigate()
@@ -29,42 +29,28 @@ export default function QuizEditor() {
   }
 
   const handleSave = async () => {
+    // console.log('quiz', quiz)
     const updatedQuiz = {
       ...quiz,
       courseId: courseId,
+      title: quiz.title,
       assignmentGroup: 'Quizzes',
-      title: quiz.title || 'New Quiz',
       type: 'Graded Quiz',
       questions: questionList,
     }
-
+    // console.log('updatedQuiz', updatedQuiz)
     dispatch(setCurrentQuiz(updatedQuiz))
-
-    if (quizId && quizId !== 'new') {
-      await client.updateQuiz({
-        ...quiz,
-        courseId: courseId,
-        assignmentGroup: 'Quizzes',
-        title: quiz.title || 'New Quiz',
-        type: 'Graded Quiz',
-        question: questionList,
-      })
-      await client.updateQuiz(quiz)
-      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
+    const index = quizzes.findIndex(q => q._id === quizId)
+    if (index !== -1) {
+      await client.updateQuiz(updatedQuiz)
     } else {
-      await client.saveQuiz({
-        ...quiz,
-        courseId: courseId,
-        assignmentGroup: 'Quizzes',
-        title: quiz.title || 'New Quiz',
-        type: 'Graded Quiz',
-        questions: questionList,
-      })
-      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
+      await client.saveQuiz(updatedQuiz)
     }
-
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
+    dispatch(resetQuiz())
+    dispatch(resetQuestion())
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   const handleSaveAndPublish = async () => {
@@ -83,17 +69,17 @@ export default function QuizEditor() {
     dispatch(setQuizzes(quizzesData))
   }
 
-  //   useEffect(() => {
-  //     if (!quizId || quizId === 'new') {
-  //       dispatch(resetQuiz())
-  //     } else {
-  //       const currentQuiz = quizzes.find(q => q._id === quizId)
-  //       if (currentQuiz) {
-  //         dispatch(setCurrentQuiz(currentQuiz))
-  //         //dispatch(setQuestions(currentQuiz.questions))
-  //       }
-  //     }
-  //   }, [dispatch, quizId, quizzes])
+    useEffect(() => {
+      if (!quizId || quizId === 'new') {
+        dispatch(resetQuiz())
+      } else {
+        const currentQuiz = quizzes.find(q => q._id === quizId)
+        if (currentQuiz) {
+          dispatch(setCurrentQuiz(currentQuiz))
+          //dispatch(setQuestions(currentQuiz.questions))
+        }
+      }
+    }, [dispatch, quizId, quizzes])
 
   return (
     <div className="container my-3 mb-5">
@@ -181,21 +167,21 @@ export default function QuizEditor() {
             <input
               type="datetime-local"
               className="form-control"
-              value={quiz.dueDate.slice(0, 16)}
+              value={quiz.dueDate?.slice(0, 16)}
               onChange={e => dispatch(setCurrentQuiz({ ...quiz, dueDate: e.target.value }))}
             />
             <label>Available From:</label>
             <input
               type="datetime-local"
               className="form-control"
-              value={quiz.availableDate.slice(0, 16)}
+              value={quiz.availableDate?.slice(0, 16)}
               onChange={e => dispatch(setCurrentQuiz({ ...quiz, availableDate: e.target.value }))}
             />
             <label>Until Date:</label>
             <input
               type="datetime-local"
               className="form-control"
-              value={quiz.untilDate.slice(0, 16)}
+              value={quiz.untilDate?.slice(0, 16)}
               onChange={e => dispatch(setCurrentQuiz({ ...quiz, untilDate: e.target.value }))}
             />
           </div>

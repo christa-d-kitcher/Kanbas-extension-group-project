@@ -70,6 +70,7 @@ const quizSlice = createSlice({
       state.quizzes.push(action.payload)
     },
     updateQuiz: (state, action: PayloadAction<Quiz>) => {
+      console.log('action.payload', action.payload)
       state.quizzes = state.quizzes.map(quiz =>
         quiz._id === action.payload._id ? action.payload : quiz
       )

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
-import { setQuestions, setQuestion } from './questionsReducer'
+import { setQuestions, setQuestion, resetQuestion,deleteQuestion } from './questionsReducer'
 import { setCurrentQuiz, setQuizzes, resetQuiz, updateQuiz, addQuiz } from '../quizReducer'
 import * as client from '../client'
 
@@ -17,14 +17,15 @@ function QuestionsEditor() {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      await client.getQuestionsByQuizId(quizId || '').then((data) => {
+      await client.getQuestionsByQuizId(quizId ?? '').then(data => {
         if (data) {
           dispatch(setQuestions(data))
           dispatch(setCurrentQuiz({ ...quiz, questions: data }))
-        }})
-      };
-      fetchQuestions()
-  }, [])
+        }
+      })
+    }
+    fetchQuestions()
+  }, [questionList.length, quizId])
 
   const questionType = (type: any) => {
     switch (type) {
@@ -39,39 +40,46 @@ function QuestionsEditor() {
     }
   }
 
-  const handelDeleteQuestion = async () => {
-    await client.deleteQuestion(quizId || '', question._id)
+  const handelDeleteQuestion = async (questionId:any) => {
+    dispatch(deleteQuestion(questionId))
+    await client.deleteQuestion(quizId, questionId)
     const questionsData = await client.getQuestionsByQuizId(quizId || '')
     dispatch(setQuestions(questionsData))
+    dispatch(resetQuestion())
+    dispatch(resetQuiz())
   }
   const handleCancel = () => {
-    dispatch(resetQuiz());
+    dispatch(resetQuiz())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
   const handleSave = async () => {
+    console.log('quiz', quiz)
     const updatedQuiz = {
       ...quiz,
       courseId: courseId,
       assignmentGroup: 'Quizzes',
-      title: quiz.title || 'New Quiz',
+      title: quiz.title,
       type: 'Graded Quiz',
-      questions: questionList,
     }
-
+    // console.log('updatedQuiz', updatedQuiz)
     dispatch(setCurrentQuiz(updatedQuiz))
-    const index = quizzes.findIndex((q) => q._id === quizId)
+    const index = quizzes.findIndex(q => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
     } else {
-      await client.saveQuiz(quiz)
+      await client.saveQuiz(updatedQuiz)
     }
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
+    dispatch(resetQuiz())
+    dispatch(resetQuestion())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
+
   const handleSaveAndPublish = async () => {
-    dispatch(setCurrentQuiz({ ...quiz, questions: questionList,  courseId: courseId }))
-    const index = quizzes.findIndex((q) => q._id === quizId)
+    // console.log('quiz')
+    dispatch(setCurrentQuiz({ ...quiz, questions: questionList, courseId: courseId }))
+    const index = quizzes.findIndex(q => q._id === quizId)
     if (index !== -1) {
       await client.updateQuiz(quiz)
       await client.publishQuiz(quizId || '')
@@ -81,6 +89,7 @@ function QuestionsEditor() {
     }
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
+    dispatch(resetQuiz())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
@@ -113,11 +122,11 @@ function QuestionsEditor() {
                   <Link
                     to={`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionEditor/${question._id}`}
                     className="btn btn-secondary me-2"
-                    onClick={(e) => dispatch(setQuestion(question))}
+                    onClick={e => dispatch(setQuestion(question))}
                   >
                     Edit
                   </Link>
-                  <button onClick={handelDeleteQuestion} className="btn btn-danger">
+                  <button onClick={()=>handelDeleteQuestion(question._id)} className="btn btn-danger">
                     Delete
                   </button>
                 </td>
