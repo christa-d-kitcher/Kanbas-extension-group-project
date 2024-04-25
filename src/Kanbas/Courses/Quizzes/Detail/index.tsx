@@ -98,6 +98,7 @@ const QuizDetails = () => {
               value={editedQuiz.quizType}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, quizType: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="Graded Quiz">Graded Quiz</option>
               <option value="Practice Quiz">Practice Quiz</option>
@@ -112,6 +113,7 @@ const QuizDetails = () => {
               value={editedQuiz.points}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, points: parseInt(e.target.value) })}
+              disabled={quiz._id}
             />
           </div>
           <div className="form-group">
@@ -120,6 +122,7 @@ const QuizDetails = () => {
               value={editedQuiz.assignmentGroup}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, assignmentGroup: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="Quizzes">Quizzes</option>
               <option value="Exams">Exams</option>
@@ -133,6 +136,7 @@ const QuizDetails = () => {
               value={editedQuiz.shuffleAnswers}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, shuffleAnswers: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -145,6 +149,7 @@ const QuizDetails = () => {
               value={editedQuiz.timeLimit / 60}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, timeLimit: e.target.value })}
+              disabled={quiz._id}
             />
           </div>
           <div className="form-group">
@@ -153,6 +158,7 @@ const QuizDetails = () => {
               value={editedQuiz.multipleAttempts}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, multipleAttempts: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="No">No</option>
               <option value="Yes">Yes</option>
@@ -164,6 +170,7 @@ const QuizDetails = () => {
               value={editedQuiz.showCorrectAnswers}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, showCorrectAnswers: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="No">No</option>
               <option value="Yes">Yes</option>
@@ -176,6 +183,7 @@ const QuizDetails = () => {
               value={editedQuiz.accessCode}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, accessCode: e.target.value })}
+              disabled={quiz._id}
             />
           </div>
           <div className="form-group">
@@ -184,6 +192,7 @@ const QuizDetails = () => {
               value={editedQuiz.oneQuestionAtATime}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, oneQuestionAtATime: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -195,6 +204,7 @@ const QuizDetails = () => {
               value={editedQuiz.webcamRequired}
               className="form-control"
               onChange={e => setEditedQuiz({ ...editedQuiz, webcamRequired: e.target.value })}
+              disabled={quiz._id}
             >
               <option value="No">No</option>
               <option value="Yes">Yes</option>
@@ -208,6 +218,7 @@ const QuizDetails = () => {
               onChange={e =>
                 setEditedQuiz({ ...editedQuiz, lockQuestionsAfterAnswering: e.target.value })
               }
+              disabled={quiz._id}
             >
               <option value="No">No</option>
               <option value="Yes">Yes</option>

@@ -183,21 +183,21 @@ export default function QuizEditor() {
             </select>
           </div>
           <h5>Options</h5>
-          <div className="my-3">
-            <div>
-              <label>Shuffle Answers:</label>
-              <input
-                type="checkbox"
-                checked={quiz.shuffleAnswers === 'Yes'}
-                onChange={e =>
-                  dispatch(
-                    setCurrentQuiz({ ...quiz, shuffleAnswers: e.target.checked ? 'Yes' : 'No' })
-                  )
-                }
-              />
+          <div className="container border rounded-3 p-4 my-3">
+            <div className="my-3">
+              <div>
+                <label>Shuffle Answers:</label>
+                <input
+                  type="checkbox"
+                  checked={quiz.shuffleAnswers === 'Yes'}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({ ...quiz, shuffleAnswers: e.target.checked ? 'Yes' : 'No' })
+                    )
+                  }
+                />
+              </div>
             </div>
-          </div>
-          <div>
             <div className="row align-items-center">
               <div className="col-auto">
                 <label>Time Limit:</label>
@@ -206,30 +206,27 @@ export default function QuizEditor() {
                 <input
                   type="checkbox"
                   checked={quiz.timeLimit > 0}
-                  onChange={e =>
+                  onChange={e => {
+                    const minutes = parseInt(e.target.value)
                     dispatch(
                       setCurrentQuiz({
                         ...quiz,
-                        timeLimit: e.target.checked ? 60 : 0,
+                        timeLimit: isNaN(minutes) ? 0 : minutes * 60,
                       })
                     )
+                  }}
+                />
+              </div>
+              <div className="col">
+                <input
+                  type="number"
+                  value={quiz.timeLimit / 60}
+                  className="form-control"
+                  onChange={e =>
+                    dispatch(setCurrentQuiz({ ...quiz, timeLimit: parseInt(e.target.value) * 60 }))
                   }
                 />
               </div>
-              {quiz.timeLimit > 0 && (
-                <div className="col">
-                  <input
-                    type="number"
-                    value={quiz.timeLimit / 60}
-                    className="form-control"
-                    onChange={e =>
-                      dispatch(
-                        setCurrentQuiz({ ...quiz, timeLimit: parseInt(e.target.value) * 60 })
-                      )
-                    }
-                  />
-                </div>
-              )}
               <div className="col-auto">
                 <label>Minutes</label>
               </div>
@@ -247,6 +244,81 @@ export default function QuizEditor() {
               />
             </div>
             <div className="my-3">
+              <div>
+                <label>Show Correct Answers:</label>
+                <input
+                  type="checkbox"
+                  checked={quiz.showCorrectAnswers === 'Yes'}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({
+                        ...quiz,
+                        showCorrectAnswers: e.target.checked ? 'Yes' : 'No',
+                      })
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <label>Access Code:</label>
+            <input
+              type="text"
+              className="form-control"
+              value={quiz.accessCode}
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, accessCode: e.target.value }))}
+            />
+            <div className="my-3">
+              <div>
+                <label>One Question at a Time:</label>
+                <input
+                  type="checkbox"
+                  checked={quiz.oneQuestionAtATime === 'Yes'}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({
+                        ...quiz,
+                        oneQuestionAtATime: e.target.checked ? 'Yes' : 'No',
+                      })
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className="my-3">
+              <div>
+                <label>Webcam Required:</label>
+                <input
+                  type="checkbox"
+                  checked={quiz.webcamRequired === 'Yes'}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({
+                        ...quiz,
+                        webcamRequired: e.target.checked ? 'Yes' : 'No',
+                      })
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className="my-3">
+              <div>
+                <label>Lock Questions After Answering:</label>
+                <input
+                  type="checkbox"
+                  checked={quiz.lockQuestionsAfterAnswering === 'Yes'}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({
+                        ...quiz,
+                        lockQuestionsAfterAnswering: e.target.checked ? 'Yes' : 'No',
+                      })
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className="my-3">
               <label>Points:</label>
               <input
                 type="number"
@@ -256,8 +328,10 @@ export default function QuizEditor() {
                   dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value) }))
                 }
               />
-              <label>Assign to:</label>
             </div>
+          </div>
+          <div>
+            <label>Assign to:</label>
             <input
               type="text"
               className="form-control"
