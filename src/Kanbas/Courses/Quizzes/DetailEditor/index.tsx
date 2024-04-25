@@ -62,11 +62,11 @@ export default function QuizEditor() {
     } else {
       const newQuiz = await client.saveQuiz(quiz)
       await client.publishQuiz(newQuiz._id)
-      navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
     }
 
     const quizzesData = await client.getQuizzesByCourseId(courseId || '')
     dispatch(setQuizzes(quizzesData))
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   const handleDescriptionChange = (event: any) => {
