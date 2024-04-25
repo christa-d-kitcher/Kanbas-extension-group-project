@@ -153,18 +153,6 @@ const QuizDetails = () => {
             />
           </div>
           <div className="form-group">
-            <label>Multiple Attempts:</label>
-            <select
-              value={editedQuiz.multipleAttempts}
-              className="form-control"
-              onChange={e => setEditedQuiz({ ...editedQuiz, multipleAttempts: e.target.value })}
-              disabled={quiz._id}
-            >
-              <option value="No">No</option>
-              <option value="Yes">Yes</option>
-            </select>
-          </div>
-          <div className="form-group">
             <label>Show Correct Answers:</label>
             <select
               value={editedQuiz.showCorrectAnswers}
