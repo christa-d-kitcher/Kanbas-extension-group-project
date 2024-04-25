@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect,useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { KanbasState } from '../../../store'
@@ -14,7 +14,8 @@ function QuestionsEditor() {
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
   const questionList = useSelector((state: KanbasState) => state.questionsReducer.questions)
   const question = useSelector((state: KanbasState) => state.questionsReducer.question)
-
+  const [newQuestionList, setNewQuestionList] = useState(questionList)
+  // console.log('questionList', questionList)
   useEffect(() => {
     const fetchQuestions = async () => {
       await client.getQuestionsByQuizId(quizId ?? '').then(data => {
@@ -30,7 +31,7 @@ function QuestionsEditor() {
     fetchQuestions()
     // console.log('questionList', questionList)
     // console.log('question', question)
-  }, [questionList.length, quizId])
+  }, [quizId])
 
   const questionType = (type: any) => {
     switch (type) {
@@ -45,23 +46,22 @@ function QuestionsEditor() {
     }
   }
 
-  const handelDeleteQuestion = async (questionId: any) => {
-    console.log('quiz', quiz)
+  const handelDeleteQuestion = async (question:any) => {
+    // console.log('quiz', quiz)
+    // console.log('question', question)
     try {
-      const newQuestionList = questionList.filter(q => q._id !== questionId)
-      console.log('newQuestionList', newQuestionList)
+      const newQuestionList = questionList.filter(q => q._id !== question._id)
+      setNewQuestionList(newQuestionList)
+      // console.log('newQuestionList', newQuestionList)
       const newQuiz = { ...quiz, questions: newQuestionList }
       // console.log('newQuiz', newQuiz);
 
-      await client.updateQuiz(newQuiz)
-      // dispatch(setQuestions(newQuestionList));
       dispatch(setCurrentQuiz(newQuiz))
-      // console.log('Quizzes', quizzes);
-      // dispatch(setQuizzes(quizzes));
-      dispatch(deleteQuestion(questionId)) // 确保此行未被注释
+      dispatch(setQuestions(newQuestionList))
+      dispatch(deleteQuestion(question)) // 确保此行未被注释
       dispatch(resetQuestion())
-      // dispatch(resetQuiz());
-      console.log('Question deleted successfully')
+      await client.updateQuiz(newQuiz)
+      console.log('delete question success')
     } catch (error) {
       console.error('Failed to delete question:', error)
     }
@@ -79,13 +79,16 @@ function QuestionsEditor() {
       assignmentGroup: 'Quizzes',
       title: quiz.title,
       type: 'Graded Quiz',
-      questions: questionList,
+      questions: newQuestionList,
     }
+    // console.log('newQuestionList', newQuestionList)
     // console.log('updatedQuiz', updatedQuiz)
     dispatch(setCurrentQuiz(updatedQuiz))
     const index = quizzes.findIndex(q => q._id === quizId)
     if (index !== -1) {
-      await client.updateQuiz(quiz)
+      // console.log('updateQuiz')
+      await client.updateQuiz(updatedQuiz)
+      console.log('updateQuiz', updatedQuiz)
     } else {
       await client.saveQuiz(updatedQuiz)
     }
@@ -127,8 +130,7 @@ function QuestionsEditor() {
           </thead>
           <tbody>
             {questionList?.map((question: any) => {
-              if (!question.title || !question.description) return null
-
+              if (!question.title) return null
               return (
                 <tr key={question._id}>
                   <td>
@@ -150,7 +152,7 @@ function QuestionsEditor() {
                       Edit
                     </Link>
                     <button
-                      onClick={() => handelDeleteQuestion(question._id)}
+                      onClick={() => handelDeleteQuestion(question)}
                       className="btn btn-danger"
                     >
                       Delete

@@ -129,7 +129,7 @@ const QuizList = () => {
                 <h3 className="d-inline mb-0">Assignment Quizzes</h3>
               </div>
               <ul className="list-group">
-                {quizzes.map(quiz => (
+                {Array.isArray(quizzes) && quizzes.map(quiz => (
                   <li key={quiz._id} className="list-group-item py-4 border-1 border-start">
                     <div className="d-flex justify-content-between">
                       <div>

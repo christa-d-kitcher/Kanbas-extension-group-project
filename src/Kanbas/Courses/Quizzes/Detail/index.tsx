@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -6,6 +6,8 @@ import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons
 import moment from 'moment'
 import { CiEdit } from 'react-icons/ci'
 import { saveQuiz, updateQuiz, publishQuiz, unpublishQuiz } from '../client'
+import { setQuestions } from '../QuestionsEditor/questionsReducer'
+import * as client from '../client'
 import { setCurrentQuiz } from '../quizReducer'
 import { KanbasState } from '../../../store'
 import './index.css'
@@ -16,7 +18,25 @@ const QuizDetails = () => {
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
   const [editedQuiz, setEditedQuiz] = useState(quiz)
   const { courseId } = useParams()
+  const quizId = quiz._id
   // console.log('quiz', quiz)
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      await client.getQuestionsByQuizId(quizId ?? '').then(data => {
+        if (data) {
+          dispatch(setQuestions(data))
+          dispatch(setCurrentQuiz({ ...quiz, questions: data }))
+        } else {
+          dispatch(setQuestions([]))
+          dispatch(setCurrentQuiz({ ...quiz, questions: [] }))
+        }
+      })
+    }
+    fetchQuestions()
+    // console.log('questionList', questionList)
+    // console.log('question', question)
+  }, [quizId])
 
   const handleSave = async () => {
     if (quiz._id) {
@@ -25,7 +45,7 @@ const QuizDetails = () => {
       const newQuiz = await saveQuiz(editedQuiz)
       dispatch(setCurrentQuiz(newQuiz))
     }
-    navigate('/Kanbas/Courses/QuizzesList/QuizDetails/QuizList')
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
   }
 
   const handlePublish = async () => {
@@ -50,7 +70,7 @@ const QuizDetails = () => {
           <CiEdit /> Edit
         </Link>
         <Link
-          to={`/Kanbas/Courses/${courseId}/Quizzes/${quiz._id}/QuestionReview`}
+          to={`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/QuestionReview`}
           className="float-end btn btn-light me-2"
         >
           Review

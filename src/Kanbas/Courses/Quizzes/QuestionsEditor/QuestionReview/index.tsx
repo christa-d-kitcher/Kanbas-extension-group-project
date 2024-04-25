@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -12,13 +12,20 @@ import { updateQuiz } from '../../quizReducer'
 function QuestionReview() {
   const dispatch = useDispatch()
   const { quizId, courseId } = useParams()
+  const navigate = useNavigate()
   const quizzes = useSelector((state: KanbasState) => state.quizReducer.quizzes)
   const quiz = useSelector((state: KanbasState) => state.quizReducer.quiz)
   const currentQuiz = quizzes.find(quiz => quiz._id === quizId)
+  // console.log('currentQuiz', currentQuiz)
   const questions = useSelector((state: any) => {
     const questionData = state.questionsReducer.questions
-    return questionData ? Object.values(questionData) : []
+    // return questionData ? Object.values(questionData) : []
+    return questionData ? questionData : []
   })
+  // const questions = currentQuiz?.questions;
+  // console.log('quizId', quizId)
+  // console.log('courseId', courseId)
+  console.log('questions', questions)
   const [questionNum, setQuestionNum] = useState(0)
   const [ifFirst, setIfFirst] = useState(false)
 
@@ -66,14 +73,15 @@ function QuestionReview() {
     }
   }
 
-  const handleUpdateQuiz = async (quizId: string) => {
-    const updatedQuiz = await client.updateQuiz(quizId)
+  const handleUpdateQuiz = async (quiz:any) => {
+    // console.log('quizId', quizId)
+    const updatedQuiz = await client.updateQuiz(quiz)
     dispatch(updateQuiz(updatedQuiz))
   }
 
   const handleSubmitQuiz = () => {
-    const updatedQuiz = { ...currentQuiz, isPublished: true }
-    handleUpdateQuiz(quizId ?? '')
+    handleUpdateQuiz(quiz)
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/`)
   }
 
   function renderQuestionList() {

@@ -10,7 +10,7 @@ import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlinePublishedWithChanges, MdOutlineUnpublished } from 'react-icons/md'
 import QuestionsEditor from '../QuestionsEditor'
 import './index.css'
-import { setQuestions, setQuestion,resetQuestion } from '../QuestionsEditor/questionsReducer'
+import { setQuestions, setQuestion, resetQuestion } from '../QuestionsEditor/questionsReducer'
 
 export default function QuizEditor() {
   const navigate = useNavigate()
@@ -69,17 +69,21 @@ export default function QuizEditor() {
     dispatch(setQuizzes(quizzesData))
   }
 
-    useEffect(() => {
-      if (!quizId || quizId === 'new') {
-        dispatch(resetQuiz())
-      } else {
-        const currentQuiz = quizzes.find(q => q._id === quizId)
-        if (currentQuiz) {
-          dispatch(setCurrentQuiz(currentQuiz))
-          //dispatch(setQuestions(currentQuiz.questions))
-        }
+  const handleDescriptionChange = (event: any) => {
+    dispatch(setCurrentQuiz({ ...quiz, description: event.target.value }))
+  }
+
+  useEffect(() => {
+    if (!quizId || quizId === 'new') {
+      dispatch(resetQuiz())
+    } else {
+      const currentQuiz = quizzes.find(q => q._id === quizId)
+      if (currentQuiz) {
+        dispatch(setCurrentQuiz(currentQuiz))
+        //dispatch(setQuestions(currentQuiz.questions))
       }
-    }, [dispatch, quizId, quizzes])
+    }
+  }, [dispatch, quizId, quizzes])
 
   return (
     <div className="container my-3 mb-5">
@@ -125,8 +129,14 @@ export default function QuizEditor() {
             }}
           />
           <label>Description:</label>
+          {/* <textarea
+            className="form-control"
+            value={quiz.description}
+            onChange={handleDescriptionChange}
+            style={{ height: '500px' }} // Adjust height as needed
+          /> */}
           <Editor
-            apiKey="rbhkgq7fs4tvui8zgsogy4uf9kwqbr2rlc47ipr5b9yxtnlz"
+            apiKey="4yja473vg7ka09jquf9ervp03x8783j7emtczpx3aqm00edp"
             value={quiz.description}
             onEditorChange={handleEditorChange}
             init={{

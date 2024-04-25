@@ -34,24 +34,11 @@ function MultipleChoice() {
   
 
   const handleUpdateQuestion = async () => {
-    const newQuestion = {
-      ...question,
-      courseId: courseId,
-      choices: question.choices,
-      correct: question.correct,
-    }
-    // console.log('question', newQuestion)
-    // console.log('quiz', quiz)
-    const newQuiz = { ...quiz, questions: newQuestion }
-    // console.log('quiz1', newQuiz)
-    await client.updateQuiz(newQuiz)
-    dispatch(resetQuestion())
 
     const index = questions.findIndex(q => q._id === questionId)
     if (index !== -1) {
       dispatch(updateQuestion(question))
       dispatch(resetQuestion())
-      // console.log('question11', question)
     } else {
       const correct = []
       const choices = []
@@ -65,11 +52,9 @@ function MultipleChoice() {
       }
 
       const newQuestion = { ...question, choices: choices, correct: correct }
-      // console.log('newQuestion', newQuestion)
-      // dispatch(setQuestion(newQuestion))
       dispatch(addQuestion(newQuestion))
     }
-    // dispatch(resetQuestion())
+    dispatch(resetQuestion())
     navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/DetailEditor`)
   }
 
