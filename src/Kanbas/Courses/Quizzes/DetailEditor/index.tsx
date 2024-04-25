@@ -50,7 +50,7 @@ export default function QuizEditor() {
     dispatch(setQuizzes(quizzesData))
     dispatch(resetQuiz())
     dispatch(resetQuestion())
-    navigate(`/Kanbas/Courses/${courseId}/Quizzes`)
+    navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quiz._id}/QuizDetail`)
   }
 
   const handleSaveAndPublish = async () => {
@@ -128,7 +128,7 @@ export default function QuizEditor() {
               dispatch(setCurrentQuiz({ ...quiz, title: e.target.value }))
             }}
           />
-          <label>Description:</label>
+          <label>Quiz Instructions:</label>
           {/* <textarea
             className="form-control"
             value={quiz.description}
@@ -157,16 +157,107 @@ export default function QuizEditor() {
             }}
           />
           <div className="my-3">
-            <label>Points:</label>
-            <input
-              type="number"
+            <label>Quiz Type:</label>
+            <select
+              value={quiz.quizType}
               className="form-control"
-              value={quiz.points}
-              onChange={e =>
-                dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value) }))
-              }
-            />
-            <label>Assign to:</label>
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, quizType: e.target.value }))}
+            >
+              <option value="Graded Quiz">Graded Quiz</option>
+              <option value="Practice Quiz">Practice Quiz</option>
+              <option value="Graded Survey">Graded Survey</option>
+              <option value="Ungraded Survey">Ungraded Survey</option>
+            </select>
+          </div>
+          <div className="my-3">
+            <label>Assignment Group:</label>
+            <select
+              value={quiz.assignmentGroup}
+              className="form-control"
+              onChange={e => dispatch(setCurrentQuiz({ ...quiz, assignmentGroup: e.target.value }))}
+            >
+              <option value="Quizzes">Quizzes</option>
+              <option value="Exams">Exams</option>
+              <option value="Assignments">Assignments</option>
+              <option value="Project">Project</option>
+            </select>
+          </div>
+          <h5>Options</h5>
+          <div className="my-3">
+            <div>
+              <label>Shuffle Answers:</label>
+              <input
+                type="checkbox"
+                checked={quiz.shuffleAnswers === 'Yes'}
+                onChange={e =>
+                  dispatch(
+                    setCurrentQuiz({ ...quiz, shuffleAnswers: e.target.checked ? 'Yes' : 'No' })
+                  )
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div className="row align-items-center">
+              <div className="col-auto">
+                <label>Time Limit:</label>
+              </div>
+              <div className="col">
+                <input
+                  type="checkbox"
+                  checked={quiz.timeLimit > 0}
+                  onChange={e =>
+                    dispatch(
+                      setCurrentQuiz({
+                        ...quiz,
+                        timeLimit: e.target.checked ? 60 : 0,
+                      })
+                    )
+                  }
+                />
+              </div>
+              {quiz.timeLimit > 0 && (
+                <div className="col">
+                  <input
+                    type="number"
+                    value={quiz.timeLimit / 60}
+                    className="form-control"
+                    onChange={e =>
+                      dispatch(
+                        setCurrentQuiz({ ...quiz, timeLimit: parseInt(e.target.value) * 60 })
+                      )
+                    }
+                  />
+                </div>
+              )}
+              <div className="col-auto">
+                <label>Minutes</label>
+              </div>
+            </div>
+            <div className="my-3">
+              <label>Multiple Attempts:</label>
+              <input
+                type="checkbox"
+                checked={quiz.multipleAttempts === 'Yes'}
+                onChange={e =>
+                  dispatch(
+                    setCurrentQuiz({ ...quiz, multipleAttempts: e.target.checked ? 'Yes' : 'No' })
+                  )
+                }
+              />
+            </div>
+            <div className="my-3">
+              <label>Points:</label>
+              <input
+                type="number"
+                className="form-control"
+                value={quiz.points}
+                onChange={e =>
+                  dispatch(setCurrentQuiz({ ...quiz, points: parseInt(e.target.value) }))
+                }
+              />
+              <label>Assign to:</label>
+            </div>
             <input
               type="text"
               className="form-control"
